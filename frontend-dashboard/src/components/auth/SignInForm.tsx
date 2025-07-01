@@ -88,7 +88,7 @@ export default function SignInForm() {
             </p>
           </div>
           <div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
+            {/* <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
               <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                 <svg
                   width="20"
@@ -140,6 +140,7 @@ export default function SignInForm() {
                 </span>
               </div>
             </div>
+             */}
             {error && (
               <div className="mb-4 p-3 text-sm text-red-600 bg-red-100 border border-red-300 rounded-lg dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
                 {error}
