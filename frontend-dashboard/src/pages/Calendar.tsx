@@ -36,25 +36,25 @@ const Calendar: React.FC = () => {
   useEffect(() => {
     // Initialize with some events
     setEvents([
-      {
-        id: "1",
-        title: "Event Conf.",
-        start: new Date().toISOString().split("T")[0],
-        extendedProps: { calendar: "Danger" },
-      },
-      {
-        id: "2",
-        title: "Meeting",
-        start: new Date(Date.now() + 86400000).toISOString().split("T")[0],
-        extendedProps: { calendar: "Success" },
-      },
-      {
-        id: "3",
-        title: "Workshop",
-        start: new Date(Date.now() + 172800000).toISOString().split("T")[0],
-        end: new Date(Date.now() + 259200000).toISOString().split("T")[0],
-        extendedProps: { calendar: "Primary" },
-      },
+      // {
+      //   id: "1",
+      //   title: "Event Conf.",
+      //   start: new Date().toISOString().split("T")[0],
+      //   extendedProps: { calendar: "Danger" },
+      // },
+      // {
+      //   id: "2",
+      //   title: "Meeting",
+      //   start: new Date(Date.now() + 86400000).toISOString().split("T")[0],
+      //   extendedProps: { calendar: "Success" },
+      // },
+      // {
+      //   id: "3",
+      //   title: "Workshop",
+      //   start: new Date(Date.now() + 172800000).toISOString().split("T")[0],
+      //   end: new Date(Date.now() + 259200000).toISOString().split("T")[0],
+      //   extendedProps: { calendar: "Primary" },
+      // },
     ]);
   }, []);
 
@@ -118,8 +118,8 @@ const Calendar: React.FC = () => {
   return (
     <>
       <PageMeta
-        title="React.js Calendar Dashboard | TailAdmin - Next.js Admin Dashboard Template"
-        description="This is React.js Calendar Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="CFO Script"
+        description=""
       />
       <div className="rounded-2xl border  border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="custom-calendar">

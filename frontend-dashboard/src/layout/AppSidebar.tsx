@@ -16,7 +16,7 @@ import {
   UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import SidebarWidget from "./SidebarWidget";
+// import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
   name: string;
@@ -29,65 +29,117 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    // subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    path: "/",
   },
   {
     icon: <CalenderIcon />,
     name: "Calendar",
     path: "/calendar",
   },
-  {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
-  },
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  },
-  {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
-    ],
-  },
+  // {
+  //   icon: <UserCircleIcon />,
+  //   name: "User Profile",
+  //   path: "/profile",
+  // },
+  // {
+  //   name: "Forms",
+  //   icon: <ListIcon />,
+  //   subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+  // },
+  // {
+  //   name: "Tables",
+  //   icon: <TableIcon />,
+  //   subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+  // },
+  // {
+  //   name: "Pages",
+  //   icon: <PageIcon />,
+  //   subItems: [
+  //     { name: "Blank Page", path: "/blank", pro: false },
+  //     { name: "404 Error", path: "/error-404", pro: false },
+  //   ],
+  // },
 ];
 
 const othersItems: NavItem[] = [
   {
-    icon: <PieChartIcon />,
-    name: "Charts",
+    name: "Accounts Receivable",
+    icon: <ListIcon />,
     subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
+      { name: "Contract", path: "/services/accounts-receivable/contract" },
+      { name: "Invoice Triggers", path: "/services/accounts-receivable/invoice-triggers" },
+      { name: "Debit/Credit Notes", path: "/services/accounts-receivable/debit-credit-notes" },
+      { name: "Invoice Generation", path: "/services/accounts-receivable/invoice-generation" },
+      { name: "Invoice Accounting", path: "/services/accounts-receivable/invoice-accounting" },
+      { name: "Receipts", path: "/services/accounts-receivable/receipts" },
     ],
   },
   {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
+    name: "Accounts Payable",
+    icon: <ListIcon />,
     subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
+      { name: "Contracts/ Bills Payable", path: "/services/accounts-payable/contracts-bills-payable" },
+      { name: "Debit/Credit Notes", path: "/services/accounts-payable/debit-credit-notes" },
+      { name: "Payables Accounting", path: "/services/accounts-payable/payables-accounting" },
+      { name: "3 way Matching", path: "/services/accounts-payable/3-way-matching" },
+      { name: "Exceptions", path: "/services/accounts-payable/exceptions" },
+      { name: "Payment Generation", path: "/services/accounts-payable/payment-generation" },
+      { name: "Payment Accounting", path: "/services/accounts-payable/payment-accounting" },
+      { name: "Followups", path: "/services/accounts-payable/followups" },
+      { name: "Payables Analytics", path: "/services/accounts-payable/payables-analytics" },
     ],
   },
   {
-    icon: <PlugInIcon />,
-    name: "Authentication",
+    name: "Payroll",
+    icon: <ListIcon />,
     subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
+      { name: "HRMS Data Analytics", path: "/services/payroll/hrms-data-analytics" },
+      { name: "HRMS Amendments", path: "/services/payroll/hrms-amendments" },
+      { name: "Payroll Accounting", path: "/services/payroll/payroll-accounting" },
+      { name: "Payroll Compliances", path: "/services/payroll/payroll-compliances" },
+      { name: "Payroll Analytics", path: "/services/payroll/payroll-analytics" },
+    ],
+  },
+  {
+    name: "Compliances",
+    icon: <ListIcon />,
+    subItems: [
+      { name: "Compliances Calendar", path: "/services/compliances/compliances-calendar" },
+      { name: "Compliances Team", path: "/services/compliances/compliances-team" },
+      { name: "Tracker", path: "/services/compliances/tracker" },
+      { name: "Exceptions", path: "/services/compliances/exceptions" },
+      { name: "Compliances Analytics", path: "/services/compliances/compliances-analytics" },
+    ],
+  },
+  {
+    name: "IndAS FS",
+    icon: <ListIcon />,
+    subItems: [
+      { name: "Accounting System", path: "/services/indas-fs/accounting-system" },
+      { name: "Additional Inputs", path: "/services/indas-fs/additional-inputs" },
+      { name: "Provisions", path: "/services/indas-fs/provisions" },
+      { name: "Deferred Income", path: "/services/indas-fs/deferred-income" },
+      { name: "Adjustments", path: "/services/indas-fs/adjustments" },
+      { name: "Journal Entries", path: "/services/indas-fs/journal-entries" },
+      { name: "Generate Financials", path: "/services/indas-fs/generate-financials" },
+      { name: "Intra-Company Analysis", path: "/services/indas-fs/intra-company-analysis" },
+      { name: "Industry Analysis", path: "/services/indas-fs/industry-analysis" },
+    ],
+  },
+  {
+    name: "Budgets",
+    icon: <ListIcon />,
+    subItems: [
+      { name: "Objectives, Assumptions & Targets", path: "/services/budgets/objectives-assumptions-targets" },
+      { name: "Review past performance", path: "/services/budgets/review-past-performance" },
+      { name: "Income Identification", path: "/services/budgets/income-identification" },
+      { name: "Expense Identification", path: "/services/budgets/expense-identification" },
+      { name: "Income & Expense Analysis", path: "/services/budgets/income-expense-analysis" },
+      { name: "Generate Budget", path: "/services/budgets/generate-budget" },
+      { name: "Responsibility Mapping", path: "/services/budgets/responsibility-mapping" },
+      { name: "Review & Monitor", path: "/services/budgets/review-monitor" },
+      { name: "Budget Analytics", path: "/services/budgets/budget-analytics" },
     ],
   },
 ];
@@ -308,14 +360,14 @@ const AppSidebar: React.FC = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
+                src="/images/logo/logo_new.svg"
                 alt="Logo"
                 width={150}
                 height={40}
               />
               <img
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                src="/images/logo/logo-dark_new.svg"
                 alt="Logo"
                 width={150}
                 height={40}
@@ -323,7 +375,7 @@ const AppSidebar: React.FC = () => {
             </>
           ) : (
             <img
-              src="/images/logo/logo-icon.svg"
+              src="/images/logo/logo-icon_new.svg"
               alt="Logo"
               width={32}
               height={32}
@@ -359,7 +411,7 @@ const AppSidebar: React.FC = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
+                  "Services"
                 ) : (
                   <HorizontaLDots />
                 )}
@@ -367,8 +419,13 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(othersItems, "others")}
             </div>
           </div>
+          <p>asd</p>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
+        {/* {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null} */}
+      </div>
+      {/* Copyright at the bottom */}
+      <div className="mt-auto py-4 text-center text-xs text-gray-400">
+        &copy; 2015 Script Infinite | All rights reserved.
       </div>
     </aside>
   );

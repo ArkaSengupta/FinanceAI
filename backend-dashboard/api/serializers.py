@@ -16,7 +16,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UserProfile
-        fields = ('id', 'user', 'bio', 'birth_date', 'avatar', 'created_at', 'updated_at')
+        fields = ('id', 'user', 'bio', 'role', 'client', 'avatar', 'created_at', 'updated_at')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -27,20 +27,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         min_length=8,
         style={'input_type': 'password'}
     )
-    password2 = serializers.CharField(
-        write_only=True, 
-        required=True,
-        style={'input_type': 'password'}
-    )
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name')
+        fields = ('username', 'password', 'email', 'first_name', 'last_name')
 
     def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
-        
         # Additional password strength validation
         password = attrs['password']
         if len(password) < 8:
@@ -58,7 +50,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        validated_data.pop('password2')
         user = User.objects.create_user(**validated_data)
         return user
 

@@ -21,6 +21,21 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = RegisterSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        
+        # Generate tokens for the newly created user
+        refresh = RefreshToken.for_user(user)
+        
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user': UserSerializer(user).data,
+            'expires_in': 3600  # 1 hour in seconds
+        }, status=status.HTTP_201_CREATED)
+
 
 class LoginView(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -72,6 +87,29 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user.userprofile
+
+    def get(self, request, *args, **kwargs):
+        """Get user profile with user data"""
+        profile = self.get_object()
+        serializer = self.get_serializer(profile)
+        return Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        """Update user profile"""
+        profile = self.get_object()
+        serializer = self.get_serializer(profile, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'message': 'Profile updated successfully',
+                'profile': serializer.data
+            })
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, *args, **kwargs):
+        """Partial update user profile"""
+        return self.put(request, *args, **kwargs)
 
 
 class ChangePasswordView(generics.UpdateAPIView):

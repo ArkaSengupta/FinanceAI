@@ -18,15 +18,64 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import Contract from "./pages/Services/AccountsReceivable/Contract";
+import InvoiceTriggers from "./pages/Services/AccountsReceivable/InvoiceTriggers";
+import DebitCreditNotes from "./pages/Services/AccountsReceivable/DebitCreditNotes";
+import InvoiceGeneration from "./pages/Services/AccountsReceivable/InvoiceGeneration";
+import InvoiceAccounting from "./pages/Services/AccountsReceivable/InvoiceAccounting";
+import Receipts from "./pages/Services/AccountsReceivable/Receipts";
+import ContractsBillsPayable from "./pages/Services/AccountsPayable/ContractsBillsPayable";
+import DebitCreditNotesAP from "./pages/Services/AccountsPayable/DebitCreditNotes";
+import PayablesAccounting from "./pages/Services/AccountsPayable/PayablesAccounting";
+import ThreeWayMatching from "./pages/Services/AccountsPayable/ThreeWayMatching";
+import ExceptionsAP from "./pages/Services/AccountsPayable/Exceptions";
+import PaymentGeneration from "./pages/Services/AccountsPayable/PaymentGeneration";
+import PaymentAccounting from "./pages/Services/AccountsPayable/PaymentAccounting";
+import Followups from "./pages/Services/AccountsPayable/Followups";
+import PayablesAnalytics from "./pages/Services/AccountsPayable/PayablesAnalytics";
+import HRMSDataAnalytics from "./pages/Services/Payroll/HRMSDataAnalytics";
+import HRMSAmendments from "./pages/Services/Payroll/HRMSAmendments";
+import PayrollAccounting from "./pages/Services/Payroll/PayrollAccounting";
+import PayrollCompliances from "./pages/Services/Payroll/PayrollCompliances";
+import PayrollAnalytics from "./pages/Services/Payroll/PayrollAnalytics";
+import CompliancesCalendar from "./pages/Services/Compliances/CompliancesCalendar";
+import CompliancesTeam from "./pages/Services/Compliances/CompliancesTeam";
+import Tracker from "./pages/Services/Compliances/Tracker";
+import ExceptionsCompliances from "./pages/Services/Compliances/Exceptions";
+import CompliancesAnalytics from "./pages/Services/Compliances/CompliancesAnalytics";
+import AccountingSystem from "./pages/Services/IndASFS/AccountingSystem";
+import AdditionalInputs from "./pages/Services/IndASFS/AdditionalInputs";
+import Provisions from "./pages/Services/IndASFS/Provisions";
+import DeferredIncome from "./pages/Services/IndASFS/DeferredIncome";
+import Adjustments from "./pages/Services/IndASFS/Adjustments";
+import JournalEntries from "./pages/Services/IndASFS/JournalEntries";
+import GenerateFinancials from "./pages/Services/IndASFS/GenerateFinancials";
+import IntraCompanyAnalysis from "./pages/Services/IndASFS/IntraCompanyAnalysis";
+import IndustryAnalysis from "./pages/Services/IndASFS/IndustryAnalysis";
+import ObjectivesAssumptionsTargets from "./pages/Services/Budgets/ObjectivesAssumptionsTargets";
+import ReviewPastPerformance from "./pages/Services/Budgets/ReviewPastPerformance";
+import IncomeIdentification from "./pages/Services/Budgets/IncomeIdentification";
+import ExpenseIdentification from "./pages/Services/Budgets/ExpenseIdentification";
+import IncomeExpenseAnalysis from "./pages/Services/Budgets/IncomeExpenseAnalysis";
+import GenerateBudget from "./pages/Services/Budgets/GenerateBudget";
+import ResponsibilityMapping from "./pages/Services/Budgets/ResponsibilityMapping";
+import ReviewMonitor from "./pages/Services/Budgets/ReviewMonitor";
+import BudgetAnalytics from "./pages/Services/Budgets/BudgetAnalytics";
 
 export default function App() {
   return (
-    <>
+    <AuthProvider>
       <Router>
         <ScrollToTop />
         <Routes>
-          {/* Dashboard Layout */}
-          <Route element={<AppLayout />}>
+          {/* Dashboard Layout - Protected Routes */}
+          <Route element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }>
             <Route index path="/" element={<Home />} />
 
             {/* Others Page */}
@@ -51,9 +100,59 @@ export default function App() {
             {/* Charts */}
             <Route path="/line-chart" element={<LineChart />} />
             <Route path="/bar-chart" element={<BarChart />} />
+
+            {/* Services */}
+            <Route path="/services/accounts-receivable/contract" element={<Contract />} />
+            <Route path="/services/accounts-receivable/invoice-triggers" element={<InvoiceTriggers />} />
+            <Route path="/services/accounts-receivable/debit-credit-notes" element={<DebitCreditNotes />} />
+            <Route path="/services/accounts-receivable/invoice-generation" element={<InvoiceGeneration />} />
+            <Route path="/services/accounts-receivable/invoice-accounting" element={<InvoiceAccounting />} />
+            <Route path="/services/accounts-receivable/receipts" element={<Receipts />} />
+            {/* Accounts Payable Services */}
+            <Route path="/services/accounts-payable/contracts-bills-payable" element={<ContractsBillsPayable />} />
+            <Route path="/services/accounts-payable/debit-credit-notes" element={<DebitCreditNotesAP />} />
+            <Route path="/services/accounts-payable/payables-accounting" element={<PayablesAccounting />} />
+            <Route path="/services/accounts-payable/3-way-matching" element={<ThreeWayMatching />} />
+            <Route path="/services/accounts-payable/exceptions" element={<ExceptionsAP />} />
+            <Route path="/services/accounts-payable/payment-generation" element={<PaymentGeneration />} />
+            <Route path="/services/accounts-payable/payment-accounting" element={<PaymentAccounting />} />
+            <Route path="/services/accounts-payable/followups" element={<Followups />} />
+            <Route path="/services/accounts-payable/payables-analytics" element={<PayablesAnalytics />} />
+            {/* Payroll Services */}
+            <Route path="/services/payroll/hrms-data-analytics" element={<HRMSDataAnalytics />} />
+            <Route path="/services/payroll/hrms-amendments" element={<HRMSAmendments />} />
+            <Route path="/services/payroll/payroll-accounting" element={<PayrollAccounting />} />
+            <Route path="/services/payroll/payroll-compliances" element={<PayrollCompliances />} />
+            <Route path="/services/payroll/payroll-analytics" element={<PayrollAnalytics />} />
+            {/* Compliances Services */}
+            <Route path="/services/compliances/compliances-calendar" element={<CompliancesCalendar />} />
+            <Route path="/services/compliances/compliances-team" element={<CompliancesTeam />} />
+            <Route path="/services/compliances/tracker" element={<Tracker />} />
+            <Route path="/services/compliances/exceptions" element={<ExceptionsCompliances />} />
+            <Route path="/services/compliances/compliances-analytics" element={<CompliancesAnalytics />} />
+            {/* IndAS FS Services */}
+            <Route path="/services/indas-fs/accounting-system" element={<AccountingSystem />} />
+            <Route path="/services/indas-fs/additional-inputs" element={<AdditionalInputs />} />
+            <Route path="/services/indas-fs/provisions" element={<Provisions />} />
+            <Route path="/services/indas-fs/deferred-income" element={<DeferredIncome />} />
+            <Route path="/services/indas-fs/adjustments" element={<Adjustments />} />
+            <Route path="/services/indas-fs/journal-entries" element={<JournalEntries />} />
+            <Route path="/services/indas-fs/generate-financials" element={<GenerateFinancials />} />
+            <Route path="/services/indas-fs/intra-company-analysis" element={<IntraCompanyAnalysis />} />
+            <Route path="/services/indas-fs/industry-analysis" element={<IndustryAnalysis />} />
+            {/* Budgets Services */}
+            <Route path="/services/budgets/objectives-assumptions-targets" element={<ObjectivesAssumptionsTargets />} />
+            <Route path="/services/budgets/review-past-performance" element={<ReviewPastPerformance />} />
+            <Route path="/services/budgets/income-identification" element={<IncomeIdentification />} />
+            <Route path="/services/budgets/expense-identification" element={<ExpenseIdentification />} />
+            <Route path="/services/budgets/income-expense-analysis" element={<IncomeExpenseAnalysis />} />
+            <Route path="/services/budgets/generate-budget" element={<GenerateBudget />} />
+            <Route path="/services/budgets/responsibility-mapping" element={<ResponsibilityMapping />} />
+            <Route path="/services/budgets/review-monitor" element={<ReviewMonitor />} />
+            <Route path="/services/budgets/budget-analytics" element={<BudgetAnalytics />} />
           </Route>
 
-          {/* Auth Layout */}
+          {/* Auth Layout - Public Routes */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
 
@@ -61,6 +160,6 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
-    </>
+    </AuthProvider>
   );
 }

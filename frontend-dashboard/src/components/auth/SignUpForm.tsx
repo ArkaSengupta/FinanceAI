@@ -1,16 +1,106 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
+import Button from "../ui/button/Button";
+import { useAuth } from "../../context/AuthContext";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    first_name: "",
+    last_name: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
+  const navigate = useNavigate();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const clearPassword = () => {
+    setFormData(prev => ({
+      ...prev,
+      password: ""
+    }));
+  };
+
+  const validatePassword = (password: string): string | null => {
+    if (password.length < 8) {
+      return "Password must be at least 8 characters long";
+    }
+    if (!/[A-Z]/.test(password)) {
+      return "Password must contain at least one uppercase letter";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Password must contain at least one lowercase letter";
+    }
+    if (!/\d/.test(password)) {
+      return "Password must contain at least one number";
+    }
+    return null;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    if (!formData.username || !formData.email || !formData.password || !formData.first_name || !formData.last_name) {
+      setError("Please fill in all fields");
+      setLoading(false);
+      return;
+    }
+
+    // Validate password strength
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      setError(passwordError);
+      setLoading(false);
+      return;
+    }
+
+    if (!isChecked) {
+      setError("Please accept the terms and conditions");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const success = await register(formData);
+      if (success) {
+        // Clear password from memory immediately after successful registration
+        clearPassword();
+        navigate("/", { replace: true });
+      } else {
+        setError("Registration failed. Please try again.");
+        // Clear password on failed registration
+        clearPassword();
+      }
+    } catch (err) {
+      setError("An error occurred during registration");
+      // Clear password on error
+      clearPassword();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 w-full overflow-y-auto lg:w-1/2 no-scrollbar">
-      <div className="w-full max-w-md mx-auto mb-5 sm:pt-10">
+      {/* <div className="w-full max-w-md mx-auto mb-5 sm:pt-10">
         <Link
           to="/"
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -18,7 +108,7 @@ export default function SignUpForm() {
           <ChevronLeftIcon className="size-5" />
           Back to dashboard
         </Link>
-      </div>
+      </div> */}
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div>
           <div className="mb-5 sm:mb-8">
@@ -26,7 +116,7 @@ export default function SignUpForm() {
               Sign Up
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Enter your email and password to sign up!
+              Enter your details to create an account!
             </p>
           </div>
           <div>
@@ -82,7 +172,12 @@ export default function SignUpForm() {
                 </span>
               </div>
             </div>
-            <form>
+            {error && (
+              <div className="mb-4 p-3 text-sm text-red-600 bg-red-100 border border-red-300 rounded-lg dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
+                {error}
+              </div>
+            )}
+            <form onSubmit={handleSubmit}>
               <div className="space-y-5">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   {/* <!-- First Name --> */}
@@ -92,9 +187,11 @@ export default function SignUpForm() {
                     </Label>
                     <Input
                       type="text"
-                      id="fname"
-                      name="fname"
+                      name="first_name"
+                      value={formData.first_name}
+                      onChange={handleInputChange}
                       placeholder="Enter your first name"
+                      autoComplete="given-name"
                     />
                   </div>
                   {/* <!-- Last Name --> */}
@@ -104,11 +201,27 @@ export default function SignUpForm() {
                     </Label>
                     <Input
                       type="text"
-                      id="lname"
-                      name="lname"
+                      name="last_name"
+                      value={formData.last_name}
+                      onChange={handleInputChange}
                       placeholder="Enter your last name"
+                      autoComplete="family-name"
                     />
                   </div>
+                </div>
+                {/* <!-- Username --> */}
+                <div>
+                  <Label>
+                    Username<span className="text-error-500">*</span>
+                  </Label>
+                  <Input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    placeholder="Enter your username"
+                    autoComplete="username"
+                  />
                 </div>
                 {/* <!-- Email --> */}
                 <div>
@@ -117,9 +230,11 @@ export default function SignUpForm() {
                   </Label>
                   <Input
                     type="email"
-                    id="email"
                     name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
                     placeholder="Enter your email"
+                    autoComplete="email"
                   />
                 </div>
                 {/* <!-- Password --> */}
@@ -129,8 +244,12 @@ export default function SignUpForm() {
                   </Label>
                   <div className="relative">
                     <Input
+                      name="password"
                       placeholder="Enter your password"
                       type={showPassword ? "text" : "password"}
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      autoComplete="new-password"
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -143,6 +262,9 @@ export default function SignUpForm() {
                       )}
                     </span>
                   </div>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Password must be at least 8 characters with uppercase, lowercase, and number
+                  </p>
                 </div>
                 {/* <!-- Checkbox --> */}
                 <div className="flex items-center gap-3">
@@ -164,9 +286,13 @@ export default function SignUpForm() {
                 </div>
                 {/* <!-- Button --> */}
                 <div>
-                  <button className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600">
-                    Sign Up
-                  </button>
+                  <Button 
+                    type="submit"
+                    className="w-full"
+                    disabled={loading}
+                  >
+                    {loading ? "Creating account..." : "Sign Up"}
+                  </Button>
                 </div>
               </div>
             </form>
