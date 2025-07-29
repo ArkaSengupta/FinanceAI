@@ -18,7 +18,7 @@ export default function HRMSDataAnalytics() {
             Download HRMS data
             </Button>
             <Button size="md" variant="primary">
-            Upload Amendment data
+            Exception Reports
             </Button>
           </div>
         </div>
