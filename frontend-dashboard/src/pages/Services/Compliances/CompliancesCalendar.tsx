@@ -1,6 +1,7 @@
 import { pageMetaTitle } from "../../../components/common/pageMetaVars";
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import PageMeta from "../../../components/common/PageMeta";
+import Button from "../../../components/ui/button/Button";
 
 export default function CompliancesCalendar() {
   return (
@@ -12,9 +13,18 @@ export default function CompliancesCalendar() {
       <PageBreadcrumb pageTitle="Compliances - Compliances Calendar" />
       <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
         <div className="mx-auto w-full max-w-[630px] text-center">
-          <h3 className="mb-4 font-semibold text-gray-800 text-theme-xl dark:text-white/90 sm:text-2xl">
-            Not Connected
-          </h3>
+          
+          <div className="mt-6 flex items-center justify-between gap-5">
+            <Button size="md" variant="primary">
+              Add
+            </Button>
+            <Button size="md" variant="primary">
+              Modify
+            </Button>
+            <Button size="md" variant="primary">
+              Deactivate
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -25,6 +25,10 @@ import InvoiceTriggers from "./pages/Services/AccountsReceivable/InvoiceTriggers
 import DebitCreditNotes from "./pages/Services/AccountsReceivable/DebitCreditNotes";
 import InvoiceGeneration from "./pages/Services/AccountsReceivable/InvoiceGeneration";
 import InvoiceAccounting from "./pages/Services/AccountsReceivable/InvoiceAccounting";
+import GSTPortalUpload from "./pages/Services/AccountsReceivable/GSTPortalUpload";
+import TaxValidations from "./pages/Services/AccountsReceivable/TaxValidations";
+import ExceptionReporting from "./pages/Services/AccountsReceivable/ExceptionReporting";
+import ReceivablesAnalytics from "./pages/Services/AccountsReceivable/ReceivablesAnalytics";
 import Receipts from "./pages/Services/AccountsReceivable/Receipts";
 import ContractsBillsPayable from "./pages/Services/AccountsPayable/ContractsBillsPayable";
 import DebitCreditNotesAP from "./pages/Services/AccountsPayable/DebitCreditNotes";
@@ -44,6 +48,8 @@ import CompliancesCalendar from "./pages/Services/Compliances/CompliancesCalenda
 import CompliancesTeam from "./pages/Services/Compliances/CompliancesTeam";
 import Tracker from "./pages/Services/Compliances/Tracker";
 import ExceptionsCompliances from "./pages/Services/Compliances/Exceptions";
+import NonCompliance from "./pages/Services/Compliances/NonCompliance";
+import Report from "./pages/Services/Compliances/Report";
 import CompliancesAnalytics from "./pages/Services/Compliances/CompliancesAnalytics";
 import AccountingSystem from "./pages/Services/IndASFS/AccountingSystem";
 import AdditionalInputs from "./pages/Services/IndASFS/AdditionalInputs";
@@ -107,6 +113,10 @@ export default function App() {
             <Route path="/services/accounts-receivable/debit-credit-notes" element={<DebitCreditNotes />} />
             <Route path="/services/accounts-receivable/invoice-generation" element={<InvoiceGeneration />} />
             <Route path="/services/accounts-receivable/invoice-accounting" element={<InvoiceAccounting />} />
+            <Route path="/services/accounts-receivable/gst-portal-upload" element={<GSTPortalUpload />} />
+            <Route path="/services/accounts-receivable/tax-validations" element={<TaxValidations />} />
+            <Route path="/services/accounts-receivable/exception-reporting" element={<ExceptionReporting />} />
+            <Route path="/services/accounts-receivable/receivables-analytics" element={<ReceivablesAnalytics />} />
             <Route path="/services/accounts-receivable/receipts" element={<Receipts />} />
             {/* Accounts Payable Services */}
             <Route path="/services/accounts-payable/contracts-bills-payable" element={<ContractsBillsPayable />} />
@@ -129,6 +139,8 @@ export default function App() {
             <Route path="/services/compliances/compliances-team" element={<CompliancesTeam />} />
             <Route path="/services/compliances/tracker" element={<Tracker />} />
             <Route path="/services/compliances/exceptions" element={<ExceptionsCompliances />} />
+            <Route path="/services/compliances/non-compliance" element={<NonCompliance />} />
+            <Route path="/services/compliances/report" element={<Report />} />
             <Route path="/services/compliances/compliances-analytics" element={<CompliancesAnalytics />} />
             {/* IndAS FS Services */}
             <Route path="/services/indas-fs/accounting-system" element={<AccountingSystem />} />

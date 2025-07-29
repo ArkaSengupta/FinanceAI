@@ -72,7 +72,11 @@ const othersItems: NavItem[] = [
       { name: "Debit/Credit Notes", path: "/services/accounts-receivable/debit-credit-notes" },
       { name: "Invoice Generation", path: "/services/accounts-receivable/invoice-generation" },
       { name: "Invoice Accounting", path: "/services/accounts-receivable/invoice-accounting" },
-      { name: "Receipts", path: "/services/accounts-receivable/receipts" },
+      // { name: "Receipts", path: "/services/accounts-receivable/receipts" },
+      { name: "GST Portal Upload", path: "/services/accounts-receivable/gst-portal-upload" },
+      { name: "Tax Validations", path: "/services/accounts-receivable/tax-validations" },
+      { name: "Exception Reporting", path: "/services/accounts-receivable/exception-reporting" },
+      { name: "Receivables Analytics", path: "/services/accounts-receivable/receivables-analytics" },
     ],
   },
   {
@@ -109,6 +113,8 @@ const othersItems: NavItem[] = [
       { name: "Compliances Team", path: "/services/compliances/compliances-team" },
       { name: "Tracker", path: "/services/compliances/tracker" },
       { name: "Exceptions", path: "/services/compliances/exceptions" },
+      { name: "Non Compliance", path: "/services/compliances/non-compliance" },
+      { name: "Report", path: "/services/compliances/report" },
       { name: "Compliances Analytics", path: "/services/compliances/compliances-analytics" },
     ],
   },
@@ -419,7 +425,6 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(othersItems, "others")}
             </div>
           </div>
-          <p>asd</p>
         </nav>
         {/* {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null} */}
       </div>

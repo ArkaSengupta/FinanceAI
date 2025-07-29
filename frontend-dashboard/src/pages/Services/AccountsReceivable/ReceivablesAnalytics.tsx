@@ -9,7 +9,7 @@ import Input from "../../../components/form/input/InputField";
 import Select from "../../../components/form/Select";
 import DatePicker from "../../../components/form/date-picker.tsx";
 
-export default function PayrollAnalytics() {
+export default function ReceivablesAnalytics() {
   const [formData, setFormData] = useState({
     fromDate: '',
     toDate: '',
@@ -46,17 +46,17 @@ export default function PayrollAnalytics() {
     <div>
       <PageMeta
         title={pageMetaTitle}
-        description="Payroll - Payroll Analytics Service Page"
+        description="Accounts Receivable - Receivables Analytics Service Page"
       />
-      <PageBreadcrumb pageTitle="Payroll - Payroll Analytics" />
+      <PageBreadcrumb pageTitle="Accounts Receivable - Receivables Analytics" />
       <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
         <div className="mx-auto w-full max-w-[800px]">
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Generate Payroll Analytics
+              Generate Invoice Analytics
             </h1>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Configure and generate payroll analytics reports
+              Configure and generate invoice analytics reports for accounts receivable
             </p>
           </div>
 
@@ -91,7 +91,7 @@ export default function PayrollAnalytics() {
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* Report Type */}
-              {/* <div>
+              <div>
                 <Label htmlFor="report-type">Select Report Type</Label>
                 <Select
                   options={reportTypeOptions}
@@ -99,7 +99,7 @@ export default function PayrollAnalytics() {
                   onChange={(value) => handleInputChange('reportType', value)}
                   className="dark:bg-gray-900"
                 />
-              </div> */}
+              </div>
 
               {/* Report Format */}
               <div>
@@ -121,7 +121,7 @@ export default function PayrollAnalytics() {
                 variant="primary"
                 className="min-w-[200px]"
               >
-                Generate Payroll Analytics
+                Generate Invoice Analytics
               </Button>
             </div>
           </Form>

@@ -43,10 +43,23 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Demo mode - set to true to bypass authentication
+const DEMO_MODE = true;
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Demo user data
+  const demoUser: User = {
+    id: 1,
+    username: 'demo_user',
+    email: 'demo@example.com',
+    first_name: 'Demo',
+    last_name: 'User',
+    date_joined: '2024-01-01'
+  };
 
   // Secure token storage with sessionStorage (cleared when browser closes)
   const getStoredToken = () => {
@@ -113,7 +126,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const storedToken = getStoredToken();
     const storedUser = getStoredUser();
     
-    if (storedToken && storedUser) {
+    if (DEMO_MODE) {
+      // Demo mode: automatically set user as authenticated
+      setUser(demoUser);
+      setToken('demo_token_12345');
+      setStoredToken('demo_token_12345');
+      setStoredUser(demoUser);
+      console.log('Demo mode enabled - bypassing authentication');
+    } else if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(storedUser);
     }
@@ -122,6 +142,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const refreshToken = async (): Promise<boolean> => {
+    if (DEMO_MODE) {
+      return true; // Demo mode always returns true
+    }
+
     const refreshTokenValue = getStoredRefreshToken();
     if (!refreshTokenValue) {
       return false;
@@ -154,6 +178,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const login = async (username: string, password: string): Promise<boolean> => {
+    if (DEMO_MODE) {
+      // Demo mode: always return true
+      setUser(demoUser);
+      setToken('demo_token_12345');
+      setStoredToken('demo_token_12345');
+      setStoredUser(demoUser);
+      return true;
+    }
+
     try {
       const response = await fetch(buildApiUrl(API_ENDPOINTS.LOGIN), {
         method: 'POST',
@@ -182,6 +215,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const register = async (userData: RegisterData): Promise<boolean> => {
+    if (DEMO_MODE) {
+      // Demo mode: always return true
+      setUser(demoUser);
+      setToken('demo_token_12345');
+      setStoredToken('demo_token_12345');
+      setStoredUser(demoUser);
+      return true;
+    }
+
     try {
       const response = await fetch(buildApiUrl(API_ENDPOINTS.REGISTER), {
         method: 'POST',
