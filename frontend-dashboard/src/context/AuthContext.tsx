@@ -8,6 +8,8 @@ interface User {
   first_name: string;
   last_name: string;
   date_joined: string;
+  role?: string;
+  client?: string;
 }
 
 interface AuthContextType {
@@ -58,7 +60,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     email: 'demo@example.com',
     first_name: 'Demo',
     last_name: 'User',
-    date_joined: '2024-01-01'
+    date_joined: '2024-01-01',
+    role: 'Software Engineer',
+    client: 'FinanceAI'
   };
 
   // Secure token storage with sessionStorage (cleared when browser closes)

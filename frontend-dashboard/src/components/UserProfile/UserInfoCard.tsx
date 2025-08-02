@@ -25,9 +25,23 @@ interface UserProfile {
   updated_at: string;
 }
 
-export default function UserInfoCard() {
+interface UserInfoCardProps {
+  user?: {
+    id: number;
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    date_joined: string;
+  } | null;
+}
+
+export default function UserInfoCard({ user: propUser }: UserInfoCardProps = {}) {
   const { isOpen, openModal, closeModal } = useModal();
-  const { user, token } = useAuth();
+  const { user: authUser, token } = useAuth();
+  
+  // Use prop user if provided, otherwise use auth user
+  const user = propUser || authUser;
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [editForm, setEditForm] = useState({
