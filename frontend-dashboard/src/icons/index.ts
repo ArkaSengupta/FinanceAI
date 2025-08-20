@@ -36,8 +36,12 @@ import { ReactComponent as UserIcon } from "./user-line.svg?react";
 import { ReactComponent as CalenderIcon } from "./calender-line.svg?react";
 import { ReactComponent as EyeIcon } from "./eye.svg?react";
 import { ReactComponent as EyeCloseIcon } from "./eye-close.svg?react";
+import { ReactComponent as EyeBlackIcon } from "./eye-black.svg?react";
+import { ReactComponent as EyeWhiteIcon } from "./eye-white.svg?react";
 import { ReactComponent as TimeIcon } from "./time.svg?react";
 import { ReactComponent as CopyIcon } from "./copy.svg?react";
+import { ReactComponent as CopyBlackIcon } from "./copy-black.svg?react";
+import { ReactComponent as CopyWhiteIcon } from "./copy-white.svg?react";
 import { ReactComponent as ChevronLeftIcon } from "./chevron-left.svg?react";
 import { ReactComponent as UserCircleIcon } from "./user-circle.svg?react";
 import { ReactComponent as TaskIcon } from "./task-icon.svg?react";
@@ -94,8 +98,12 @@ export {
   CalenderIcon,
   EyeIcon,
   EyeCloseIcon,
+  EyeBlackIcon,
+  EyeWhiteIcon,
   TimeIcon,
   CopyIcon,
+  CopyBlackIcon,
+  CopyWhiteIcon,
   ChevronLeftIcon,
   UserCircleIcon,
   TaskIcon,

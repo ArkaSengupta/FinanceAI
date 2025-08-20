@@ -13,7 +13,7 @@ import {
 } from "../../../components/ui/table";
 import Input from "../../../components/form/input/InputField";
 
-interface InvoiceAccountingItem {
+interface DeferredRevenueItem {
   id: number;
   date: string;
   accountNo: string;
@@ -35,23 +35,23 @@ interface PaginationInfo {
 }
 
 // Generate dummy data for pagination testing
-const generateDummyData = (count: number): InvoiceAccountingItem[] => {
+const generateDummyData = (count: number): DeferredRevenueItem[] => {
   const accountNames = [
-    "Accounts Receivable - Software Licenses",
-    "Accounts Receivable - Maintenance Services", 
-    "Accounts Receivable - Consulting Fees",
-    "Accounts Receivable - Training Programs",
-    "Accounts Receivable - Support Services",
-    "Accounts Receivable - Implementation",
-    "Accounts Receivable - Custom Development",
-    "Accounts Receivable - Cloud Services",
-    "Accounts Receivable - Professional Services",
-    "Accounts Receivable - Annual Subscriptions"
+    "Deferred Revenue - Software Licenses",
+    "Deferred Revenue - Maintenance Services", 
+    "Deferred Revenue - Consulting Fees",
+    "Deferred Revenue - Training Programs",
+    "Deferred Revenue - Support Services",
+    "Deferred Revenue - Implementation",
+    "Deferred Revenue - Custom Development",
+    "Deferred Revenue - Cloud Services",
+    "Deferred Revenue - Professional Services",
+    "Deferred Revenue - Annual Subscriptions"
   ];
   
   const referenceNumbers = [
-    "INV-2024-001", "INV-2024-002", "INV-2024-003", "INV-2024-004", "INV-2024-005",
-    "INV-2024-006", "INV-2024-007", "INV-2024-008", "INV-2024-009", "INV-2024-010"
+    "REF-2024-001", "REF-2024-002", "REF-2024-003", "REF-2024-004", "REF-2024-005",
+    "REF-2024-006", "REF-2024-007", "REF-2024-008", "REF-2024-009", "REF-2024-010"
   ];
 
   return Array.from({ length: count }, (_, index) => {
@@ -72,8 +72,8 @@ const generateDummyData = (count: number): InvoiceAccountingItem[] => {
   });
 };
 
-export default function InvoiceAccounting() {
-  const [data, setData] = useState<InvoiceAccountingItem[]>([]);
+export default function DeferredRevenue() {
+  const [data, setData] = useState<DeferredRevenueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   
@@ -88,7 +88,7 @@ export default function InvoiceAccounting() {
   });
 
   // Simulate API call to fetch data
-  const fetchInvoiceAccounting = async (page: number = 1) => {
+  const fetchDeferredRevenue = async (page: number = 1) => {
     setLoading(true);
     
     // Simulate API delay
@@ -119,8 +119,10 @@ export default function InvoiceAccounting() {
 
   // Initial data fetch
   useEffect(() => {
-    fetchInvoiceAccounting();
+    fetchDeferredRevenue();
   }, []);
+
+
 
   const handlePostToTally = () => {
     console.log('Post to Tally functionality');
@@ -129,11 +131,11 @@ export default function InvoiceAccounting() {
   };
 
   const handleView = (id: number) => {
-    console.log('View invoice accounting item with id:', id);
+    console.log('View deferred revenue item with id:', id);
   };
 
   const handleEdit = (id: number) => {
-    console.log('Edit invoice accounting item with id:', id);
+    console.log('Edit deferred revenue item with id:', id);
   };
 
   const handleDelete = (id: number) => {
@@ -168,7 +170,7 @@ export default function InvoiceAccounting() {
 
   // Pagination handlers
   const handlePageChange = (page: number) => {
-    fetchInvoiceAccounting(page);
+    fetchDeferredRevenue(page);
   };
 
   const handleNextPage = () => {
@@ -213,19 +215,19 @@ export default function InvoiceAccounting() {
     <div>
       <PageMeta
         title={pageMetaTitle}
-        description="Accounts Receivable - Invoice Accounting Management"
+        description="Accounts Receivable - Deferred Revenue Management"
       />
-      <PageBreadcrumb pageTitle="Accounts Receivable - Invoice Accounting" />
+      <PageBreadcrumb pageTitle="Accounts Receivable - Deferred Revenue" />
       
       <div className="space-y-6">
         {/* Header Section */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Invoice Accounting Management
+              Deferred Revenue Management
             </h1>
             <p className="mt-1 text-gray-600 dark:text-gray-400">
-              View and manage invoice accounting entries
+              View and manage deferred revenue entries
             </p>
           </div>
           
@@ -242,32 +244,34 @@ export default function InvoiceAccounting() {
           </Button>
         </div>
 
+        
+
         {/* Table Section */}
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
           <div className="max-w-full overflow-x-auto">
             <Table>
-              <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-                <TableRow>
-                  <TableCell
-                    isHeader
-                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                  >
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={data.length > 0 && selectedItems.size === data.length}
-                        onChange={handleSelectAll}
-                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-                      />
-                      <span className="ml-2">Selected</span>
-                    </div>
-                  </TableCell>
-                  <TableCell
-                    isHeader
-                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                  >
-                    Date
-                  </TableCell>
+                             <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+                 <TableRow>
+                   <TableCell
+                     isHeader
+                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                   >
+                     <div className="flex items-center">
+                       <input
+                         type="checkbox"
+                         checked={data.length > 0 && selectedItems.size === data.length}
+                         onChange={handleSelectAll}
+                         className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                       />
+                       <span className="ml-2">Selected</span>
+                     </div>
+                   </TableCell>
+                   <TableCell
+                     isHeader
+                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                   >
+                     Date
+                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
@@ -310,28 +314,29 @@ export default function InvoiceAccounting() {
                   >
                     Credit Amount
                   </TableCell>
+                  
                 </TableRow>
               </TableHeader>
 
               <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                {loading ? (
-                  <TableRow>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
-                    <TableCell className="px-5 py-8 text-center">
-                      <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        <span className="ml-2 text-gray-600 dark:text-gray-400">Loading invoice accounting entries...</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
-                  </TableRow>
+                                 {loading ? (
+                   <TableRow>
+                     <TableCell className="px-5 py-8">{null}</TableCell>
+                     <TableCell className="px-5 py-8 text-center">
+                       <div className="flex items-center justify-center">
+                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                         <span className="ml-2 text-gray-600 dark:text-gray-400">Loading deferred revenue entries...</span>
+                       </div>
+                     </TableCell>
+                     <TableCell className="px-5 py-8">{null}</TableCell>
+                     <TableCell className="px-5 py-8">{null}</TableCell>
+                     <TableCell className="px-5 py-8">{null}</TableCell>
+                     <TableCell className="px-5 py-8">{null}</TableCell>
+                     <TableCell className="px-5 py-8">{null}</TableCell>
+                     <TableCell className="px-5 py-8">{null}</TableCell>
+                     <TableCell className="px-5 py-8">{null}</TableCell>
+                     <TableCell className="px-5 py-8">{null}</TableCell>
+                   </TableRow>
                 ) : data.length > 0 ? (
                   data.map((item) => (
                     <TableRow key={item.id}>
@@ -396,6 +401,7 @@ export default function InvoiceAccounting() {
                           ₹{item.creditAmount}
                         </span>
                       </TableCell>
+                      
                     </TableRow>
                   ))
                 ) : (
@@ -406,7 +412,7 @@ export default function InvoiceAccounting() {
                         <svg className="mx-auto h-12 w-12 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <p className="text-lg font-medium">No invoice accounting entries found</p>
+                        <p className="text-lg font-medium">No deferred revenue entries found</p>
                         <p className="text-sm">Try adjusting your search or filter criteria</p>
                       </div>
                     </TableCell>
@@ -432,7 +438,7 @@ export default function InvoiceAccounting() {
             <div className="text-sm text-gray-600 dark:text-gray-400">
               Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} to{' '}
               {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{' '}
-              {pagination.totalItems} invoice accounting entries
+              {pagination.totalItems} deferred revenue entries
             </div>
 
             {/* Pagination Controls */}
@@ -505,42 +511,42 @@ export default function InvoiceAccounting() {
           </div>
         )}
 
-        {/* Summary Section */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-white/[0.05] dark:bg-white/[0.03]">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {selectedData.length}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Entries Selected</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                ₹{selectedData.reduce((sum, item) => sum + parseInt(item.debitAmount.replace(/[^\d]/g, '')), 0).toLocaleString()}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Debit</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                ₹{selectedData.reduce((sum, item) => sum + parseInt(item.creditAmount.replace(/[^\d]/g, '')), 0).toLocaleString()}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Credit</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {selectedData.filter(item => item.debitCredit === 'debit').length}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Debit Entries</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                {selectedData.filter(item => item.debitCredit === 'credit').length}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Credit Entries</div>
-            </div>
-          </div>
-        </div>
+                 {/* Summary Section */}
+         <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-white/[0.05] dark:bg-white/[0.03]">
+           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+             <div className="text-center">
+               <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                 {selectedData.length}
+               </div>
+               <div className="text-sm text-gray-600 dark:text-gray-400">Total Entries Selected</div>
+             </div>
+             <div className="text-center">
+               <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                 ₹{selectedData.reduce((sum, item) => sum + parseInt(item.debitAmount.replace(/[^\d]/g, '')), 0).toLocaleString()}
+               </div>
+               <div className="text-sm text-gray-600 dark:text-gray-400">Total Debit</div>
+             </div>
+             <div className="text-center">
+               <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                 ₹{selectedData.reduce((sum, item) => sum + parseInt(item.creditAmount.replace(/[^\d]/g, '')), 0).toLocaleString()}
+               </div>
+               <div className="text-sm text-gray-600 dark:text-gray-400">Total Credit</div>
+             </div>
+             <div className="text-center">
+               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                 {selectedData.filter(item => item.debitCredit === 'debit').length}
+               </div>
+               <div className="text-sm text-gray-600 dark:text-gray-400">Debit Entries</div>
+             </div>
+             <div className="text-center">
+               <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                 {selectedData.filter(item => item.debitCredit === 'credit').length}
+               </div>
+               <div className="text-sm text-gray-600 dark:text-gray-400">Credit Entries</div>
+             </div>
+           </div>
+         </div>
       </div>
     </div>
   );
-} 
+}

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { pageMetaTitle } from "../../../components/common/pageMetaVars";
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import PageMeta from "../../../components/common/PageMeta";
 import Button from "../../../components/ui/button/Button";
-import Badge from "../../../components/ui/badge/Badge";
 import {
   Table,
   TableBody,
@@ -12,17 +12,17 @@ import {
   TableRow,
 } from "../../../components/ui/table";
 import Input from "../../../components/form/input/InputField";
+import { EyeIcon, CopyIcon } from "../../../icons";
 
-interface InvoiceAccountingItem {
+interface InvoiceItem {
   id: number;
-  date: string;
-  accountNo: string;
-  accountName: string;
-  voucherNo: string;
-  debitCredit: 'debit' | 'credit';
-  referenceNo: string;
-  debitAmount: string;
-  creditAmount: string;
+  customerName: string;
+  invoiceNumber: string;
+  issueDate: string;
+  dueDate: string;
+  amount: string;
+  currency: string;
+  status: string;
 }
 
 interface PaginationInfo {
@@ -35,47 +35,35 @@ interface PaginationInfo {
 }
 
 // Generate dummy data for pagination testing
-const generateDummyData = (count: number): InvoiceAccountingItem[] => {
-  const accountNames = [
-    "Accounts Receivable - Software Licenses",
-    "Accounts Receivable - Maintenance Services", 
-    "Accounts Receivable - Consulting Fees",
-    "Accounts Receivable - Training Programs",
-    "Accounts Receivable - Support Services",
-    "Accounts Receivable - Implementation",
-    "Accounts Receivable - Custom Development",
-    "Accounts Receivable - Cloud Services",
-    "Accounts Receivable - Professional Services",
-    "Accounts Receivable - Annual Subscriptions"
+const generateDummyData = (count: number): InvoiceItem[] => {
+  const customers = [
+    "Tech Solutions Inc.", "Digital Marketing Pro", "Startup Ventures", 
+    "E-commerce Solutions", "Consulting Corp", "Global Enterprises",
+    "Innovation Labs", "Future Systems", "Smart Solutions", "NextGen Tech"
   ];
   
-  const referenceNumbers = [
-    "INV-2024-001", "INV-2024-002", "INV-2024-003", "INV-2024-004", "INV-2024-005",
-    "INV-2024-006", "INV-2024-007", "INV-2024-008", "INV-2024-009", "INV-2024-010"
-  ];
+  const currencies = ["USD", "EUR", "GBP", "INR", "CAD", "AUD"];
 
-  return Array.from({ length: count }, (_, index) => {
-    const isDebit = Math.random() > 0.5;
-    const amount = (Math.floor(Math.random() * 100000) + 1000).toLocaleString();
-    
-    return {
-      id: index + 1,
-      date: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0],
-      accountNo: `ACC-${String(index + 1).padStart(4, '0')}`,
-      accountName: accountNames[index % accountNames.length],
-      voucherNo: `VOU-${String(index + 1).padStart(6, '0')}`,
-      debitCredit: isDebit ? 'debit' : 'credit',
-      referenceNo: referenceNumbers[index % referenceNumbers.length],
-      debitAmount: isDebit ? amount : '0',
-      creditAmount: isDebit ? '0' : amount
-    };
-  });
+  return Array.from({ length: count }, (_, index) => ({
+    id: index + 1,
+    customerName: customers[index % customers.length],
+    invoiceNumber: `INV-${String(index + 1).padStart(6, '0')}`,
+    issueDate: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0],
+    dueDate: new Date(2024, Math.floor(Math.random() * 12) + 1, Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0],
+    amount: (Math.floor(Math.random() * 10000) + 100).toString(),
+    currency: currencies[index % currencies.length],
+    status: "draft"
+  }));
 };
 
-export default function InvoiceAccounting() {
-  const [data, setData] = useState<InvoiceAccountingItem[]>([]);
+export default function DraftInvoices() {
+  const navigate = useNavigate();
+  const [data, setData] = useState<InvoiceItem[]>([]);
+  const [filteredData, setFilteredData] = useState<InvoiceItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currencyFilter, setCurrencyFilter] = useState<string>('all');
+  const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   
   // Pagination state
   const [pagination, setPagination] = useState<PaginationInfo>({
@@ -88,27 +76,39 @@ export default function InvoiceAccounting() {
   });
 
   // Simulate API call to fetch data
-  const fetchInvoiceAccounting = async (page: number = 1) => {
+  const fetchInvoices = async (page: number = 1, search: string = '', currency: string = 'all') => {
     setLoading(true);
     
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Generate dummy data (simulating 200 total items)
-    const totalItems = 200;
+    // Generate dummy data (simulating 250 total items)
+    const totalItems = 250;
     const allData = generateDummyData(totalItems);
+    
+    // Apply filters
+    let filtered = allData.filter(item => {
+      const matchesSearch = 
+        item.customerName.toLowerCase().includes(search.toLowerCase()) ||
+        item.invoiceNumber.toLowerCase().includes(search.toLowerCase());
+      
+      const matchesCurrency = currency === 'all' || item.currency === currency;
+      
+      return matchesSearch && matchesCurrency;
+    });
 
     // Calculate pagination
-    const totalPages = Math.ceil(allData.length / pagination.itemsPerPage);
+    const totalPages = Math.ceil(filtered.length / pagination.itemsPerPage);
     const startIndex = (page - 1) * pagination.itemsPerPage;
     const endIndex = startIndex + pagination.itemsPerPage;
-    const paginatedData = allData.slice(startIndex, endIndex);
+    const paginatedData = filtered.slice(startIndex, endIndex);
 
     setData(paginatedData);
+    setFilteredData(paginatedData);
     setPagination({
       currentPage: page,
       totalPages,
-      totalItems: allData.length,
+      totalItems: filtered.length,
       itemsPerPage: 50,
       hasNextPage: page < totalPages,
       hasPreviousPage: page > 1
@@ -119,56 +119,25 @@ export default function InvoiceAccounting() {
 
   // Initial data fetch
   useEffect(() => {
-    fetchInvoiceAccounting();
+    fetchInvoices();
   }, []);
 
-  const handlePostToTally = () => {
-    console.log('Post to Tally functionality');
-    console.log('Selected Data:', selectedData);
-    // Handle posting to Tally logic here
-  };
+  // Handle search and filter changes
+  useEffect(() => {
+    fetchInvoices(1, searchTerm, currencyFilter);
+  }, [searchTerm, currencyFilter]);
 
-  const handleView = (id: number) => {
-    console.log('View invoice accounting item with id:', id);
+  const handleAddNew = () => {
+    navigate('/services/accounts-receivable/invoices/add-invoice');
   };
 
   const handleEdit = (id: number) => {
-    console.log('Edit invoice accounting item with id:', id);
+    console.log('Edit draft invoice with id:', id);
   };
-
-  const handleDelete = (id: number) => {
-    setData(prev => prev.filter(item => item.id !== id));
-  };
-
-  // Selection handlers
-  const handleSelectItem = (id: number) => {
-    setSelectedItems(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
-
-  const handleSelectAll = () => {
-    if (selectedItems.size === data.length) {
-      // If all are selected, deselect all
-      setSelectedItems(new Set());
-    } else {
-      // Select all items on current page
-      setSelectedItems(new Set(data.map(item => item.id)));
-    }
-  };
-
-  // Get selected data objects
-  const selectedData = data.filter(item => selectedItems.has(item.id));
 
   // Pagination handlers
   const handlePageChange = (page: number) => {
-    fetchInvoiceAccounting(page);
+    fetchInvoices(page, searchTerm, currencyFilter);
   };
 
   const handleNextPage = () => {
@@ -213,33 +182,142 @@ export default function InvoiceAccounting() {
     <div>
       <PageMeta
         title={pageMetaTitle}
-        description="Accounts Receivable - Invoice Accounting Management"
+        description="Accounts Receivable - Draft Invoices Management"
       />
-      <PageBreadcrumb pageTitle="Accounts Receivable - Invoice Accounting" />
+      <PageBreadcrumb pageTitle="Accounts Receivable - Draft Invoices" />
       
       <div className="space-y-6">
         {/* Header Section */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Invoice Accounting Management
+              Draft Invoices
             </h1>
             <p className="mt-1 text-gray-600 dark:text-gray-400">
-              View and manage invoice accounting entries
+              View and manage draft client invoices
             </p>
           </div>
           
+          {/* Navigation Buttons */}
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => navigate('/services/accounts-receivable/completed-invoices')}
+              size="md"
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Completed
+            </Button>
+            <Button
+              onClick={() => navigate('/services/accounts-receivable/draft-invoices')}
+              size="md"
+              variant="primary"
+              className="flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Draft
+            </Button>
+            <Button
+              onClick={() => navigate('/services/accounts-receivable/pending-approval-invoices')}
+              size="md"
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Pending Approval
+            </Button>
+          </div>
+          
           <Button
-            onClick={handlePostToTally}
+            onClick={handleAddNew}
             size="md"
             variant="primary"
             className="flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            POST TO TALLY
+            Add Invoice
           </Button>
+        </div>
+
+        {/* Search and Filter Section */}
+        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-white/[0.05] dark:bg-white/[0.03]">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            {/* Search Bar */}
+            <div className="flex-1 max-w-md">
+              <div className="relative">
+                <svg
+                  className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <Input
+                  type="text"
+                  placeholder="Search customers, invoice numbers..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Filter Button */}
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={() => setShowFilters(!showFilters)}
+                size="md"
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                </svg>
+                Filters
+              </Button>
+            </div>
+          </div>
+
+          {/* Filter Options */}
+          {showFilters && (
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/[0.05]">
+              <div className="flex flex-wrap gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Currency
+                  </label>
+                  <select
+                    value={currencyFilter}
+                    onChange={(e) => setCurrencyFilter(e.target.value)}
+                    className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                  >
+                    <option value="all">All Currencies</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="INR">INR</option>
+                    <option value="CAD">CAD</option>
+                    <option value="AUD">AUD</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Table Section */}
@@ -252,63 +330,49 @@ export default function InvoiceAccounting() {
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={data.length > 0 && selectedItems.size === data.length}
-                        onChange={handleSelectAll}
-                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-                      />
-                      <span className="ml-2">Selected</span>
-                    </div>
+                    Id
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    Date
+                    Customer Name
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    Account No.
+                    Invoice Number
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    Account Name
+                    Issue Date
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    Voucher No.
+                    Due Date
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    Debit/Credit
+                    Amount
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    Reference No.
+                    Currency
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    Debit Amount
-                  </TableCell>
-                  <TableCell
-                    isHeader
-                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                  >
-                    Credit Amount
+                    Actions
                   </TableCell>
                 </TableRow>
               </TableHeader>
@@ -316,14 +380,12 @@ export default function InvoiceAccounting() {
               <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
                 {loading ? (
                   <TableRow>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8 text-center">
                       <div className="flex items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        <span className="ml-2 text-gray-600 dark:text-gray-400">Loading invoice accounting entries...</span>
+                        <span className="ml-2 text-gray-600 dark:text-gray-400">Loading draft invoices...</span>
                       </div>
                     </TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
@@ -332,85 +394,69 @@ export default function InvoiceAccounting() {
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                   </TableRow>
-                ) : data.length > 0 ? (
-                  data.map((item) => (
+                ) : filteredData.length > 0 ? (
+                  filteredData.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell className="px-5 py-4 text-start">
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.has(item.id)}
-                          onChange={() => handleSelectItem(item.id)}
-                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-                        />
+                        <span className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                          {item.id}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-start">
+                        <span className="text-gray-800 text-theme-sm dark:text-white/90">
+                          {item.customerName}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-start">
+                        <span className="font-medium text-blue-600 text-theme-sm dark:text-blue-400">
+                          {item.invoiceNumber}
+                        </span>
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
                         <span className="text-gray-600 text-theme-sm dark:text-gray-400">
-                          {item.date}
+                          {item.issueDate}
                         </span>
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
-                        <span className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                          {item.accountNo}
+                        <span className="text-gray-600 text-theme-sm dark:text-gray-400">
+                          {item.dueDate}
                         </span>
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
-                        <div className="max-w-xs">
-                          <span className="text-gray-800 text-theme-sm dark:text-white/90 leading-relaxed">
-                            {item.accountName}
-                          </span>
+                        <span className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
+                          {item.amount}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-start">
+                        <span className="text-gray-600 text-theme-sm dark:text-gray-400">
+                          {item.currency}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-start">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            onClick={() => handleEdit(item.id)}
+                            size="sm"
+                            variant="outline"
+                            className="h-8 px-3 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          >
+                            Edit
+                          </Button>
                         </div>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                          {item.voucherNo}
-                        </span>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <Badge
-                          size="sm"
-                          color={item.debitCredit === 'debit' ? 'error' : 'success'}
-                        >
-                          {item.debitCredit.toUpperCase()}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className="text-gray-600 text-theme-sm dark:text-gray-400">
-                          {item.referenceNo}
-                        </span>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className={`font-semibold text-theme-sm ${
-                          item.debitAmount !== '0' 
-                            ? 'text-red-600 dark:text-red-400' 
-                            : 'text-gray-400'
-                        }`}>
-                          ₹{item.debitAmount}
-                        </span>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className={`font-semibold text-theme-sm ${
-                          item.creditAmount !== '0' 
-                            ? 'text-green-600 dark:text-green-400' 
-                            : 'text-gray-400'
-                        }`}>
-                          ₹{item.creditAmount}
-                        </span>
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8 text-center">
                       <div className="text-gray-500 dark:text-gray-400">
                         <svg className="mx-auto h-12 w-12 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <p className="text-lg font-medium">No invoice accounting entries found</p>
+                        <p className="text-lg font-medium">No draft invoices found</p>
                         <p className="text-sm">Try adjusting your search or filter criteria</p>
                       </div>
                     </TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
@@ -432,7 +478,7 @@ export default function InvoiceAccounting() {
             <div className="text-sm text-gray-600 dark:text-gray-400">
               Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} to{' '}
               {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{' '}
-              {pagination.totalItems} invoice accounting entries
+              {pagination.totalItems} draft invoices
             </div>
 
             {/* Pagination Controls */}
@@ -504,43 +550,7 @@ export default function InvoiceAccounting() {
             </div>
           </div>
         )}
-
-        {/* Summary Section */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-white/[0.05] dark:bg-white/[0.03]">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {selectedData.length}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Entries Selected</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                ₹{selectedData.reduce((sum, item) => sum + parseInt(item.debitAmount.replace(/[^\d]/g, '')), 0).toLocaleString()}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Debit</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                ₹{selectedData.reduce((sum, item) => sum + parseInt(item.creditAmount.replace(/[^\d]/g, '')), 0).toLocaleString()}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Credit</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {selectedData.filter(item => item.debitCredit === 'debit').length}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Debit Entries</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                {selectedData.filter(item => item.debitCredit === 'credit').length}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Credit Entries</div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
-} 
+}

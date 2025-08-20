@@ -20,7 +20,22 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-import Contract from "./pages/Services/AccountsReceivable/Contract";
+import CompletedContracts from "./pages/Services/AccountsReceivable/CompletedContracts";
+import DraftContracts from "./pages/Services/AccountsReceivable/DraftContracts";
+import PendingApprovalContracts from "./pages/Services/AccountsReceivable/PendingApprovalContracts";
+import AddContract from "./pages/Services/AccountsReceivable/AddContract";
+import AddInvoice from "./pages/Services/AccountsReceivable/AddInvoice";
+import AddUnbilledRevenue from "./pages/Services/AccountsReceivable/AddUnbilledRevenue";
+import AddDebitCreditNotes from "./pages/Services/AccountsReceivable/AddDebitCreditNotes";
+import CompletedInvoices from "./pages/Services/AccountsReceivable/CompletedInvoices";
+import DraftInvoices from "./pages/Services/AccountsReceivable/DraftInvoices";
+import PendingApprovalInvoices from "./pages/Services/AccountsReceivable/PendingApprovalInvoices";
+import CompletedUnbilledRevenue from "./pages/Services/AccountsReceivable/CompletedUnbilledRevenue";
+import DraftUnbilledRevenue from "./pages/Services/AccountsReceivable/DraftUnbilledRevenue";
+import PendingApprovalUnbilledRevenue from "./pages/Services/AccountsReceivable/PendingApprovalUnbilledRevenue";
+import CompletedDebitCreditNotes from "./pages/Services/AccountsReceivable/CompletedDebitCreditNotes";
+import DraftDebitCreditNotes from "./pages/Services/AccountsReceivable/DraftDebitCreditNotes";
+import PendingApprovalDebitCreditNotes from "./pages/Services/AccountsReceivable/PendingApprovalDebitCreditNotes";
 import InvoiceTriggers from "./pages/Services/AccountsReceivable/InvoiceTriggers";
 import DebitCreditNotes from "./pages/Services/AccountsReceivable/DebitCreditNotes";
 import InvoiceGeneration from "./pages/Services/AccountsReceivable/InvoiceGeneration";
@@ -28,8 +43,10 @@ import InvoiceAccounting from "./pages/Services/AccountsReceivable/InvoiceAccoun
 import GSTPortalUpload from "./pages/Services/AccountsReceivable/GSTPortalUpload";
 import TaxValidations from "./pages/Services/AccountsReceivable/TaxValidations";
 import ExceptionReporting from "./pages/Services/AccountsReceivable/ExceptionReporting";
-import ReceivablesAnalytics from "./pages/Services/AccountsReceivable/ReceivablesAnalytics";
+import RevenueDashboard from "./pages/Services/AccountsReceivable/RevenueDashboard";
 import Receipts from "./pages/Services/AccountsReceivable/Receipts";
+import UnbilledRevenue from "./pages/Services/AccountsReceivable/UnbilledRevenue";
+import DeferredRevenue from "./pages/Services/AccountsReceivable/DeferredRevenue";
 import ContractsBillsPayable from "./pages/Services/AccountsPayable/ContractsBillsPayable";
 import DebitCreditNotesAP from "./pages/Services/AccountsPayable/DebitCreditNotes";
 import PayablesAccounting from "./pages/Services/AccountsPayable/PayablesAccounting";
@@ -69,6 +86,9 @@ import GenerateBudget from "./pages/Services/Budgets/GenerateBudget";
 import ResponsibilityMapping from "./pages/Services/Budgets/ResponsibilityMapping";
 import ReviewMonitor from "./pages/Services/Budgets/ReviewMonitor";
 import BudgetAnalytics from "./pages/Services/Budgets/BudgetAnalytics";
+import BankStatement from "./pages/Services/CashManagement/BankStatement";
+import Payments from "./pages/Services/CashManagement/Payments";
+import CashFlow from "./pages/Services/CashManagement/CashFlow";
 
 export default function App() {
   return (
@@ -108,16 +128,33 @@ export default function App() {
             <Route path="/bar-chart" element={<BarChart />} />
 
             {/* Services */}
-            <Route path="/services/accounts-receivable/contract" element={<Contract />} />
-            <Route path="/services/accounts-receivable/invoice-triggers" element={<InvoiceTriggers />} />
+            <Route path="/services/accounts-receivable/completed-contracts" element={<CompletedContracts />} />
+            <Route path="/services/accounts-receivable/draft-contracts" element={<DraftContracts />} />
+            <Route path="/services/accounts-receivable/pending-approval-contracts" element={<PendingApprovalContracts />} />
+                    <Route path="/services/accounts-receivable/contracts/add-contract" element={<AddContract />} />
+        <Route path="/services/accounts-receivable/invoices/add-invoice" element={<AddInvoice />} />
+        <Route path="/services/accounts-receivable/unbilled-revenue/add-unbilled-revenue" element={<AddUnbilledRevenue />} />
+        <Route path="/services/accounts-receivable/debit-credit-notes/add-debit-credit-notes" element={<AddDebitCreditNotes />} />
+        <Route path="/services/accounts-receivable/invoice-triggers" element={<InvoiceTriggers />} />
             <Route path="/services/accounts-receivable/debit-credit-notes" element={<DebitCreditNotes />} />
             <Route path="/services/accounts-receivable/invoice-generation" element={<InvoiceGeneration />} />
             <Route path="/services/accounts-receivable/invoice-accounting" element={<InvoiceAccounting />} />
             <Route path="/services/accounts-receivable/gst-portal-upload" element={<GSTPortalUpload />} />
             <Route path="/services/accounts-receivable/tax-validations" element={<TaxValidations />} />
             <Route path="/services/accounts-receivable/exception-reporting" element={<ExceptionReporting />} />
-            <Route path="/services/accounts-receivable/receivables-analytics" element={<ReceivablesAnalytics />} />
+            <Route path="/services/accounts-receivable/revenue-dashboard" element={<RevenueDashboard />} />
             <Route path="/services/accounts-receivable/receipts" element={<Receipts />} />
+            <Route path="/services/accounts-receivable/unbilled-revenue" element={<UnbilledRevenue />} />
+            <Route path="/services/accounts-receivable/deferred-revenue" element={<DeferredRevenue />} />
+            <Route path="/services/accounts-receivable/completed-invoices" element={<CompletedInvoices />} />
+            <Route path="/services/accounts-receivable/draft-invoices" element={<DraftInvoices />} />
+            <Route path="/services/accounts-receivable/pending-approval-invoices" element={<PendingApprovalInvoices />} />
+            <Route path="/services/accounts-receivable/completed-unbilled-revenue" element={<CompletedUnbilledRevenue />} />
+            <Route path="/services/accounts-receivable/draft-unbilled-revenue" element={<DraftUnbilledRevenue />} />
+            <Route path="/services/accounts-receivable/pending-approval-unbilled-revenue" element={<PendingApprovalUnbilledRevenue />} />
+            <Route path="/services/accounts-receivable/completed-debit-credit-notes" element={<CompletedDebitCreditNotes />} />
+            <Route path="/services/accounts-receivable/draft-debit-credit-notes" element={<DraftDebitCreditNotes />} />
+            <Route path="/services/accounts-receivable/pending-approval-debit-credit-notes" element={<PendingApprovalDebitCreditNotes />} />
             {/* Accounts Payable Services */}
             <Route path="/services/accounts-payable/contracts-bills-payable" element={<ContractsBillsPayable />} />
             <Route path="/services/accounts-payable/debit-credit-notes" element={<DebitCreditNotesAP />} />
@@ -142,16 +179,16 @@ export default function App() {
             <Route path="/services/compliances/non-compliance" element={<NonCompliance />} />
             <Route path="/services/compliances/report" element={<Report />} />
             <Route path="/services/compliances/compliances-analytics" element={<CompliancesAnalytics />} />
-            {/* IndAS FS Services */}
-            <Route path="/services/indas-fs/accounting-system" element={<AccountingSystem />} />
-            <Route path="/services/indas-fs/additional-inputs" element={<AdditionalInputs />} />
-            <Route path="/services/indas-fs/provisions" element={<Provisions />} />
-            <Route path="/services/indas-fs/deferred-income" element={<DeferredIncome />} />
-            <Route path="/services/indas-fs/adjustments" element={<Adjustments />} />
-            <Route path="/services/indas-fs/journal-entries" element={<JournalEntries />} />
-            <Route path="/services/indas-fs/generate-financials" element={<GenerateFinancials />} />
-            <Route path="/services/indas-fs/intra-company-analysis" element={<IntraCompanyAnalysis />} />
-            <Route path="/services/indas-fs/industry-analysis" element={<IndustryAnalysis />} />
+            {/* Financial Statements Services */}
+            <Route path="/services/financial-statements/accounting-system" element={<AccountingSystem />} />
+            <Route path="/services/financial-statements/additional-inputs" element={<AdditionalInputs />} />
+            <Route path="/services/financial-statements/provisions" element={<Provisions />} />
+            <Route path="/services/financial-statements/deferred-income" element={<DeferredIncome />} />
+            <Route path="/services/financial-statements/adjustments" element={<Adjustments />} />
+            <Route path="/services/financial-statements/journal-entries" element={<JournalEntries />} />
+            <Route path="/services/financial-statements/generate-financials" element={<GenerateFinancials />} />
+            <Route path="/services/financial-statements/intra-company-analysis" element={<IntraCompanyAnalysis />} />
+            <Route path="/services/financial-statements/industry-analysis" element={<IndustryAnalysis />} />
             {/* Budgets Services */}
             <Route path="/services/budgets/objectives-assumptions-targets" element={<ObjectivesAssumptionsTargets />} />
             <Route path="/services/budgets/review-past-performance" element={<ReviewPastPerformance />} />
@@ -162,6 +199,10 @@ export default function App() {
             <Route path="/services/budgets/responsibility-mapping" element={<ResponsibilityMapping />} />
             <Route path="/services/budgets/review-monitor" element={<ReviewMonitor />} />
             <Route path="/services/budgets/budget-analytics" element={<BudgetAnalytics />} />
+            {/* Cash Management Services */}
+            <Route path="/services/cash-management/bank-statement" element={<BankStatement />} />
+            <Route path="/services/cash-management/payments" element={<Payments />} />
+            <Route path="/services/cash-management/cash-flow" element={<CashFlow />} />
           </Route>
 
           {/* Auth Layout - Public Routes */}

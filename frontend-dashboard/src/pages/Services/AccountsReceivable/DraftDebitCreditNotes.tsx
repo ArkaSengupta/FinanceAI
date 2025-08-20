@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { pageMetaTitle } from "../../../components/common/pageMetaVars";
 import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import PageMeta from "../../../components/common/PageMeta";
 import Button from "../../../components/ui/button/Button";
-import Badge from "../../../components/ui/badge/Badge";
 import {
   Table,
   TableBody,
@@ -12,20 +12,19 @@ import {
   TableRow,
 } from "../../../components/ui/table";
 import Input from "../../../components/form/input/InputField";
+import { EyeIcon, CopyIcon } from "../../../icons";
 
-interface GSTInvoiceItem {
+interface DebitCreditNoteItem {
   id: number;
-  gstin: string;
-  invoiceNo: string;
-  invoiceDate: string;
   customerName: string;
-  taxableValue: string;
-  hsn: string;
-  gstRate: string;
-  igst: string;
-  cgst: string;
-  cess: string;
-  invoiceValue: string;
+  noteNumber: string;
+  noteType: string;
+  issueDate: string;
+  dueDate: string;
+  amount: string;
+  currency: string;
+  status: string;
+  reason: string;
 }
 
 interface PaginationInfo {
@@ -38,46 +37,45 @@ interface PaginationInfo {
 }
 
 // Generate dummy data for pagination testing
-const generateDummyData = (count: number): GSTInvoiceItem[] => {
-  const customerNames = [
+const generateDummyData = (count: number): DebitCreditNoteItem[] => {
+  const customers = [
     "Tech Solutions Inc.", "Digital Marketing Pro", "Startup Ventures", 
     "E-commerce Solutions", "Consulting Corp", "Global Enterprises",
     "Innovation Labs", "Future Systems", "Smart Solutions", "NextGen Tech"
   ];
   
-  const hsnCodes = [
-    "998314", "998315", "998316", "998317", "998318", 
-    "998319", "998320", "998321", "998322", "998323"
+  const noteTypes = ["Debit Note", "Credit Note"];
+  const reasons = [
+    "Service Adjustment", "Price Correction", "Quantity Discrepancy",
+    "Quality Issue", "Late Delivery", "Contract Amendment",
+    "Tax Adjustment", "Discount Application", "Return Processing",
+    "Billing Error Correction"
   ];
+  
+  const currencies = ["USD", "EUR", "GBP", "INR", "CAD", "AUD"];
 
-  return Array.from({ length: count }, (_, index) => {
-    const taxableValue = Math.floor(Math.random() * 100000) + 1000;
-    const gstRate = Math.random() > 0.5 ? 18 : 12;
-    const gstAmount = (taxableValue * gstRate) / 100;
-    const igst = Math.random() > 0.5 ? gstAmount : 0;
-    const cgst = igst === 0 ? gstAmount / 2 : 0;
-    const cess = Math.random() > 0.8 ? Math.floor(Math.random() * 1000) : 0;
-    const invoiceValue = taxableValue + gstAmount + cess;
-    
-    return {
-      id: index + 1,
-      gstin: `27AABCT${String(index + 1).padStart(4, '0')}1Z5`,
-      invoiceNo: `INV-${String(index + 1).padStart(6, '0')}`,
-      invoiceDate: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0],
-      customerName: customerNames[index % customerNames.length],
-      taxableValue: taxableValue.toLocaleString(),
-      hsn: hsnCodes[index % hsnCodes.length],
-      gstRate: `${gstRate}%`,
-      igst: igst.toLocaleString(),
-      cgst: cgst.toLocaleString(),
-      cess: cess.toLocaleString(),
-      invoiceValue: invoiceValue.toLocaleString()
-    };
-  });
+  return Array.from({ length: count }, (_, index) => ({
+    id: index + 1,
+    customerName: customers[index % customers.length],
+    noteNumber: `${noteTypes[index % noteTypes.length] === "Debit Note" ? "DN" : "CN"}-${String(index + 1).padStart(6, '0')}`,
+    noteType: noteTypes[index % noteTypes.length],
+    issueDate: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0],
+    dueDate: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0],
+    amount: (Math.floor(Math.random() * 10000) + 100).toString(),
+    currency: currencies[index % currencies.length],
+    status: "draft",
+    reason: reasons[index % reasons.length]
+  }));
 };
 
-export default function GSTPortalUpload() {
-  const [data, setData] = useState<GSTInvoiceItem[]>([]);
+export default function DraftDebitCreditNotes() {
+  const navigate = useNavigate();
+  const [data, setData] = useState<DebitCreditNoteItem[]>([]);
+  const [filteredData, setFilteredData] = useState<DebitCreditNoteItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [noteTypeFilter, setNoteTypeFilter] = useState<string>('all');
+  const [currencyFilter, setCurrencyFilter] = useState<string>('all');
+  const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
   
   // Pagination state
@@ -91,27 +89,41 @@ export default function GSTPortalUpload() {
   });
 
   // Simulate API call to fetch data
-  const fetchGSTInvoices = async (page: number = 1) => {
+  const fetchDebitCreditNotes = async (page: number = 1, search: string = '', noteType: string = 'all', currency: string = 'all') => {
     setLoading(true);
     
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Generate dummy data (simulating 200 total items)
-    const totalItems = 200;
+    // Generate dummy data (simulating 250 total items)
+    const totalItems = 250;
     const allData = generateDummyData(totalItems);
+    
+    // Apply filters
+    let filtered = allData.filter(item => {
+      const matchesSearch = 
+        item.customerName.toLowerCase().includes(search.toLowerCase()) ||
+        item.noteNumber.toLowerCase().includes(search.toLowerCase()) ||
+        item.reason.toLowerCase().includes(search.toLowerCase());
+      
+      const matchesNoteType = noteType === 'all' || item.noteType === noteType;
+      const matchesCurrency = currency === 'all' || item.currency === currency;
+      
+      return matchesSearch && matchesNoteType && matchesCurrency;
+    });
 
     // Calculate pagination
-    const totalPages = Math.ceil(allData.length / pagination.itemsPerPage);
+    const totalPages = Math.ceil(filtered.length / pagination.itemsPerPage);
     const startIndex = (page - 1) * pagination.itemsPerPage;
     const endIndex = startIndex + pagination.itemsPerPage;
-    const paginatedData = allData.slice(startIndex, endIndex);
+    const paginatedData = filtered.slice(startIndex, endIndex);
 
     setData(paginatedData);
+    setFilteredData(paginatedData);
     setPagination({
       currentPage: page,
       totalPages,
-      totalItems: allData.length,
+      totalItems: filtered.length,
       itemsPerPage: 50,
       hasNextPage: page < totalPages,
       hasPreviousPage: page > 1
@@ -122,30 +134,25 @@ export default function GSTPortalUpload() {
 
   // Initial data fetch
   useEffect(() => {
-    fetchGSTInvoices();
+    fetchDebitCreditNotes();
   }, []);
 
-  const handleUpload = () => {
-    console.log('Upload to GST Portal functionality');
-    console.log('Data to upload:', data);
-    // Handle upload to GST Portal logic here
-  };
+  // Handle search and filter changes
+  useEffect(() => {
+    fetchDebitCreditNotes(1, searchTerm, noteTypeFilter, currencyFilter);
+  }, [searchTerm, noteTypeFilter, currencyFilter]);
 
-  const handleView = (id: number) => {
-    console.log('View GST invoice with id:', id);
+  const handleAddNew = () => {
+    navigate('/services/accounts-receivable/debit-credit-notes/add-debit-credit-notes');
   };
 
   const handleEdit = (id: number) => {
-    console.log('Edit GST invoice with id:', id);
-  };
-
-  const handleDelete = (id: number) => {
-    setData(prev => prev.filter(item => item.id !== id));
+    console.log('Edit draft debit/credit note with id:', id);
   };
 
   // Pagination handlers
   const handlePageChange = (page: number) => {
-    fetchGSTInvoices(page);
+    fetchDebitCreditNotes(page, searchTerm, noteTypeFilter, currencyFilter);
   };
 
   const handleNextPage = () => {
@@ -190,59 +197,169 @@ export default function GSTPortalUpload() {
     <div>
       <PageMeta
         title={pageMetaTitle}
-        description="Accounts Receivable - GST Portal Upload Management"
+        description="Accounts Receivable - Draft Debit/Credit Notes Management"
       />
-      <PageBreadcrumb pageTitle="Accounts Receivable - GST Portal Upload" />
+      <PageBreadcrumb pageTitle="Accounts Receivable - Draft Debit/Credit Notes" />
       
       <div className="space-y-6">
         {/* Header Section */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              GST Portal Upload Management
+              Draft Debit/Credit Notes
             </h1>
             <p className="mt-1 text-gray-600 dark:text-gray-400">
-              View and manage GST invoices for portal upload
+              View and manage draft debit and credit notes
             </p>
           </div>
           
+          {/* Navigation Buttons */}
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => navigate('/services/accounts-receivable/completed-debit-credit-notes')}
+              size="md"
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Completed
+            </Button>
+            <Button
+              onClick={() => navigate('/services/accounts-receivable/draft-debit-credit-notes')}
+              size="md"
+              variant="primary"
+              className="flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Draft
+            </Button>
+            <Button
+              onClick={() => navigate('/services/accounts-receivable/pending-approval-debit-credit-notes')}
+              size="md"
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Pending Approval
+            </Button>
+          </div>
+          
           <Button
-            onClick={handleUpload}
+            onClick={handleAddNew}
             size="md"
             variant="primary"
             className="flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            UPLOAD
+            Add Debit/Credit Note
           </Button>
+        </div>
+
+        {/* Search and Filter Section */}
+        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-white/[0.05] dark:bg-white/[0.03]">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            {/* Search Bar */}
+            <div className="flex-1 max-w-md">
+              <div className="relative">
+                <svg
+                  className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <Input
+                  type="text"
+                  placeholder="Search customers, note numbers, reasons..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Filter Button */}
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={() => setShowFilters(!showFilters)}
+                size="md"
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                </svg>
+                Filters
+              </Button>
+            </div>
+          </div>
+
+          {/* Filter Options */}
+          {showFilters && (
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/[0.05]">
+              <div className="flex flex-wrap gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Note Type
+                  </label>
+                  <select
+                    value={noteTypeFilter}
+                    onChange={(e) => setNoteTypeFilter(e.target.value)}
+                    className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                  >
+                    <option value="all">All Types</option>
+                    <option value="Debit Note">Debit Note</option>
+                    <option value="Credit Note">Credit Note</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Currency
+                  </label>
+                  <select
+                    value={currencyFilter}
+                    onChange={(e) => setCurrencyFilter(e.target.value)}
+                    className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                  >
+                    <option value="all">All Currencies</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="INR">INR</option>
+                    <option value="CAD">CAD</option>
+                    <option value="AUD">AUD</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Table Section */}
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-          <div className="w-full overflow-x-auto">
-            <div className="min-w-[1200px]">
-              <Table>
+          <div className="max-w-full overflow-x-auto">
+            <Table>
               <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    GSTIN
-                  </TableCell>
-                  <TableCell
-                    isHeader
-                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                  >
-                    Invoice No.
-                  </TableCell>
-                  <TableCell
-                    isHeader
-                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                  >
-                    Invoice Date
+                    Id
                   </TableCell>
                   <TableCell
                     isHeader
@@ -254,43 +371,49 @@ export default function GSTPortalUpload() {
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    Taxable Value
+                    Note Number
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    HSN
+                    Note Type
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    GST Rate
+                    Issue Date
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    IGST
+                    Due Date
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    CGST
+                    Amount
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    CESS
+                    Currency
                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    Invoice Value
+                    Reason
+                  </TableCell>
+                  <TableCell
+                    isHeader
+                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                  >
+                    Actions
                   </TableCell>
                 </TableRow>
               </TableHeader>
@@ -301,10 +424,9 @@ export default function GSTPortalUpload() {
                     <TableCell className="px-5 py-8 text-center">
                       <div className="flex items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        <span className="ml-2 text-gray-600 dark:text-gray-400">Loading GST invoices...</span>
+                        <span className="ml-2 text-gray-600 dark:text-gray-400">Loading draft debit/credit notes...</span>
                       </div>
                     </TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
@@ -315,77 +437,71 @@ export default function GSTPortalUpload() {
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                   </TableRow>
-                ) : data.length > 0 ? (
-                  data.map((item) => (
+                ) : filteredData.length > 0 ? (
+                  filteredData.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell className="px-5 py-4 text-start">
                         <span className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                          {item.gstin}
+                          {item.id}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-start">
+                        <span className="text-gray-800 text-theme-sm dark:text-white/90">
+                          {item.customerName}
                         </span>
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
                         <span className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                          {item.invoiceNo}
+                          {item.noteNumber}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-start">
+                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                          item.noteType === 'Debit Note' 
+                            ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                            : 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                        }`}>
+                          {item.noteType}
                         </span>
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
                         <span className="text-gray-600 text-theme-sm dark:text-gray-400">
-                          {item.invoiceDate}
+                          {item.issueDate}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-start">
+                        <span className="text-gray-600 text-theme-sm dark:text-gray-400">
+                          {item.dueDate}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-start">
+                        <span className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
+                          {item.amount}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-start">
+                        <span className="text-gray-600 text-theme-sm dark:text-gray-400">
+                          {item.currency}
                         </span>
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
                         <div className="max-w-xs">
                           <span className="text-gray-800 text-theme-sm dark:text-white/90 leading-relaxed">
-                            {item.customerName}
+                            {item.reason}
                           </span>
                         </div>
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
-                        <span className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
-                          ₹{item.taxableValue}
-                        </span>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className="text-gray-600 text-theme-sm dark:text-gray-400">
-                          {item.hsn}
-                        </span>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <Badge size="sm" color="primary">
-                          {item.gstRate}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className={`font-semibold text-theme-sm ${
-                          item.igst !== '0' 
-                            ? 'text-blue-600 dark:text-blue-400' 
-                            : 'text-gray-400'
-                        }`}>
-                          ₹{item.igst}
-                        </span>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className={`font-semibold text-theme-sm ${
-                          item.cgst !== '0' 
-                            ? 'text-green-600 dark:text-green-400' 
-                            : 'text-gray-400'
-                        }`}>
-                          ₹{item.cgst}
-                        </span>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className={`font-semibold text-theme-sm ${
-                          item.cess !== '0' 
-                            ? 'text-purple-600 dark:text-purple-400' 
-                            : 'text-gray-400'
-                        }`}>
-                          ₹{item.cess}
-                        </span>
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className="font-bold text-gray-900 text-theme-sm dark:text-white">
-                          ₹{item.invoiceValue}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            onClick={() => handleEdit(item.id)}
+                            size="sm"
+                            variant="outline"
+                            className="h-8 px-3 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          >
+                            Edit
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
@@ -396,11 +512,10 @@ export default function GSTPortalUpload() {
                         <svg className="mx-auto h-12 w-12 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <p className="text-lg font-medium">No GST invoices found</p>
+                        <p className="text-lg font-medium">No draft debit/credit notes found</p>
                         <p className="text-sm">Try adjusting your search or filter criteria</p>
                       </div>
                     </TableCell>
-                    <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
@@ -414,7 +529,6 @@ export default function GSTPortalUpload() {
                 )}
               </TableBody>
             </Table>
-            </div>
           </div>
         </div>
 
@@ -425,7 +539,7 @@ export default function GSTPortalUpload() {
             <div className="text-sm text-gray-600 dark:text-gray-400">
               Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} to{' '}
               {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{' '}
-              {pagination.totalItems} GST invoices
+              {pagination.totalItems} draft debit/credit notes
             </div>
 
             {/* Pagination Controls */}
@@ -500,4 +614,4 @@ export default function GSTPortalUpload() {
       </div>
     </div>
   );
-} 
+}
