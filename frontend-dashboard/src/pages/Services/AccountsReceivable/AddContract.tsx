@@ -27,7 +27,7 @@ interface LineItem {
   rate: string;
   billingCurrency: string;
   hsnSac: string;
-  igstRate: string;
+  gstRate: string;
 }
 
 interface ContractFormData {
@@ -57,7 +57,7 @@ export default function AddContract() {
     rate: '',
     billingCurrency: '',
     hsnSac: '',
-    igstRate: ''
+    gstRate: ''
   });
 
   // Customer options
@@ -69,16 +69,16 @@ export default function AddContract() {
     { value: "customer5", label: "Innovation Labs" }
   ];
 
-  // Service description options with HSN/SAC and IGST mapping
+  // Service description options with HSN/SAC and GST mapping
   const serviceOptions = [
-    { value: "web_development", label: "Web Development Services", hsnSac: "998314", igstRate: "18" },
-    { value: "consulting", label: "Business Consulting", hsnSac: "998315", igstRate: "18" },
-    { value: "maintenance", label: "Software Maintenance", hsnSac: "998316", igstRate: "18" },
-    { value: "training", label: "Training Services", hsnSac: "998317", igstRate: "18" },
-    { value: "support", label: "Technical Support", hsnSac: "998318", igstRate: "18" },
-    { value: "design", label: "UI/UX Design", hsnSac: "998319", igstRate: "18" },
-    { value: "testing", label: "Software Testing", hsnSac: "998320", igstRate: "18" },
-    { value: "hosting", label: "Cloud Hosting", hsnSac: "998321", igstRate: "18" }
+    { value: "web_development", label: "Web Development Services", hsnSac: "998314", gstRate: "18" },
+    { value: "consulting", label: "Business Consulting", hsnSac: "998315", gstRate: "18" },
+    { value: "maintenance", label: "Software Maintenance", hsnSac: "998316", gstRate: "18" },
+    { value: "training", label: "Training Services", hsnSac: "998317", gstRate: "18" },
+    { value: "support", label: "Technical Support", hsnSac: "998318", gstRate: "18" },
+    { value: "design", label: "UI/UX Design", hsnSac: "998319", gstRate: "18" },
+    { value: "testing", label: "Software Testing", hsnSac: "998320", gstRate: "18" },
+    { value: "hosting", label: "Cloud Hosting", hsnSac: "998321", gstRate: "18" }
   ];
 
   const deliveryFrequencyOptions = [
@@ -129,7 +129,7 @@ export default function AddContract() {
       rate: currentLineItem.rate,
       billingCurrency: currentLineItem.billingCurrency,
       hsnSac: currentLineItem.hsnSac,
-      igstRate: currentLineItem.igstRate
+      gstRate: currentLineItem.gstRate
     };
 
     setFormData(prev => ({
@@ -148,7 +148,7 @@ export default function AddContract() {
       rate: '',
       billingCurrency: '',
       hsnSac: '',
-      igstRate: ''
+      gstRate: ''
     });
   };
 
@@ -166,12 +166,12 @@ export default function AddContract() {
         if (item.id === id) {
           const updatedItem = { ...item, [field]: value };
           
-          // Auto-populate HSN/SAC and IGST Rate based on service description
+          // Auto-populate HSN/SAC and GST Rate based on service description
           if (field === 'serviceDesc') {
             const selectedService = serviceOptions.find(service => service.value === value);
             if (selectedService) {
               updatedItem.hsnSac = selectedService.hsnSac;
-              updatedItem.igstRate = selectedService.igstRate;
+              updatedItem.gstRate = selectedService.gstRate;
             }
           }
           
@@ -314,7 +314,7 @@ export default function AddContract() {
                              ...prev,
                              serviceDesc: value,
                              hsnSac: serviceOptions.find(s => s.value === value)?.hsnSac || '',
-                             igstRate: serviceOptions.find(s => s.value === value)?.igstRate || ''
+                             gstRate: serviceOptions.find(s => s.value === value)?.gstRate || ''
                            }));
                          }}
                          className="dark:bg-gray-800"
@@ -437,17 +437,17 @@ export default function AddContract() {
                        />
                      </div>
 
-                     {/* IGST Rate */}
+                     {/* GST Rate */}
                      <div>
-                       <Label>IGST Rate (%)</Label>
+                       <Label>GST Rate (%)</Label>
                        <Input
                          type="text"
-                         placeholder="IGST Rate"
-                         value={currentLineItem.igstRate}
+                         placeholder="GST Rate"
+                         value={currentLineItem.gstRate}
                          onChange={(e) => {
                            setCurrentLineItem(prev => ({
                              ...prev,
-                             igstRate: e.target.value
+                             gstRate: e.target.value
                            }));
                          }}
                          disabled
@@ -456,7 +456,7 @@ export default function AddContract() {
                   </div>
 
                                      <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                     <p>* Fill in the line item details above and click "Add Line Item" to add it to the table. HSN/SAC and IGST Rate will be auto-populated based on the selected service.</p>
+                     <p>* Fill in the line item details above and click "Add Line Item" to add it to the table. HSN/SAC and GST Rate will be auto-populated based on the selected service.</p>
                    </div>
                 </div>
 
@@ -525,7 +525,7 @@ export default function AddContract() {
                               isHeader
                               className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                             >
-                              IGST Rate
+                              GST Rate
                             </TableCell>
                             <TableCell
                               isHeader
@@ -586,7 +586,7 @@ export default function AddContract() {
                               </TableCell>
                               <TableCell className="px-5 py-4 text-start">
                                 <span className="text-gray-800 text-theme-sm dark:text-white/90">
-                                  {item.igstRate ? `${item.igstRate}%` : 'Auto-populated'}
+                                  {item.gstRate ? `${item.gstRate}%` : 'Auto-populated'}
                                 </span>
                               </TableCell>
                               <TableCell className="px-5 py-4 text-start">

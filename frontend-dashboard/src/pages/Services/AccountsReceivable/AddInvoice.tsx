@@ -39,7 +39,6 @@ interface InvoiceFormData {
   invoiceDate: string;
   customerName: string;
   dueDate: string;
-  paymentTerms: string;
   lineItems: LineItem[];
 }
 
@@ -56,7 +55,6 @@ export default function AddInvoice() {
     invoiceDate: getCurrentDate(),
     customerName: '',
     dueDate: '',
-    paymentTerms: '',
     lineItems: []
   });
 
@@ -91,24 +89,23 @@ export default function AddInvoice() {
   ];
 
   // Service description options with HSN/SAC, Rate, and Tax mapping
+  // Each service has either IGST=18% (inter-state) or CGST=9%+SGST=9% (intra-state)
   const serviceOptions = [
-    { value: "web_development", label: "Web Development Services", hsnSac: "998314", rate: "5000", igst: "18", cgst: "9", sgst: "9" },
-    { value: "consulting", label: "Business Consulting", hsnSac: "998315", rate: "3000", igst: "18", cgst: "9", sgst: "9" },
-    { value: "maintenance", label: "Software Maintenance", hsnSac: "998316", rate: "2000", igst: "18", cgst: "9", sgst: "9" },
-    { value: "training", label: "Training Services", hsnSac: "998317", rate: "1500", igst: "18", cgst: "9", sgst: "9" },
-    { value: "support", label: "Technical Support", hsnSac: "998318", rate: "1000", igst: "18", cgst: "9", sgst: "9" },
-    { value: "design", label: "UI/UX Design", hsnSac: "998319", rate: "2500", igst: "18", cgst: "9", sgst: "9" },
-    { value: "testing", label: "Software Testing", hsnSac: "998320", rate: "1800", igst: "18", cgst: "9", sgst: "9" },
-    { value: "hosting", label: "Cloud Hosting", hsnSac: "998321", rate: "800", igst: "18", cgst: "9", sgst: "9" }
+    { value: "web_development", label: "Web Development Services", hsnSac: "998314", rate: "5000", igst: "18", cgst: "0", sgst: "0" },
+    { value: "consulting", label: "Business Consulting", hsnSac: "998315", rate: "3000", igst: "0", cgst: "9", sgst: "9" },
+    { value: "maintenance", label: "Software Maintenance", hsnSac: "998316", rate: "2000", igst: "18", cgst: "0", sgst: "0" },
+    { value: "training", label: "Training Services", hsnSac: "998317", rate: "1500", igst: "0", cgst: "9", sgst: "9" },
+    { value: "support", label: "Technical Support", hsnSac: "998318", rate: "1000", igst: "18", cgst: "0", sgst: "0" },
+    { value: "design", label: "UI/UX Design", hsnSac: "998319", rate: "2500", igst: "0", cgst: "9", sgst: "9" },
+    { value: "testing", label: "Software Testing", hsnSac: "998320", rate: "1800", igst: "18", cgst: "0", sgst: "0" },
+    { value: "hosting", label: "Cloud Hosting", hsnSac: "998321", rate: "800", igst: "0", cgst: "9", sgst: "9" },
+    { value: "data_analytics", label: "Data Analytics Services", hsnSac: "998322", rate: "4000", igst: "18", cgst: "0", sgst: "0" },
+    { value: "cloud_services", label: "Cloud Infrastructure Services", hsnSac: "998323", rate: "3500", igst: "0", cgst: "9", sgst: "9" },
+    { value: "mobile_development", label: "Mobile App Development", hsnSac: "998324", rate: "6000", igst: "18", cgst: "0", sgst: "0" },
+    { value: "ai_ml_services", label: "AI/ML Development Services", hsnSac: "998325", rate: "7000", igst: "0", cgst: "9", sgst: "9" }
   ];
 
-  const paymentTermsOptions = [
-    { value: "net_15", label: "Net 15" },
-    { value: "net_30", label: "Net 30" },
-    { value: "net_45", label: "Net 45" },
-    { value: "net_60", label: "Net 60" },
-    { value: "due_on_receipt", label: "Due on Receipt" }
-  ];
+
 
   const handleInputChange = (field: keyof InvoiceFormData, value: string) => {
     setFormData(prev => ({
@@ -335,16 +332,7 @@ export default function AddInvoice() {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="paymentTerms">Payment Terms *</Label>
-                  <Select
-                    options={paymentTermsOptions}
-                    placeholder="Select payment terms"
-                    defaultValue={formData.paymentTerms}
-                    onChange={(value) => handleInputChange('paymentTerms', value)}
-                    className="dark:bg-gray-900"
-                  />
-                </div>
+
               </div>
             </div>
 

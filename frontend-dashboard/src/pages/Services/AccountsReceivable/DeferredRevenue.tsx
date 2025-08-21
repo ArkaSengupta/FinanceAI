@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "../../../components/ui/table";
 import Input from "../../../components/form/input/InputField";
+import DatePicker from "../../../components/form/date-picker.tsx";
 
 interface DeferredRevenueItem {
   id: number;
@@ -76,6 +77,7 @@ export default function DeferredRevenue() {
   const [data, setData] = useState<DeferredRevenueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  const [selectedDate, setSelectedDate] = useState<string>('');
   
   // Pagination state
   const [pagination, setPagination] = useState<PaginationInfo>({
@@ -128,6 +130,16 @@ export default function DeferredRevenue() {
     console.log('Post to Tally functionality');
     console.log('Selected Data:', selectedData);
     // Handle posting to Tally logic here
+  };
+
+  const handleGenerate = () => {
+    if (!selectedDate) {
+      alert('Please select a date first');
+      return;
+    }
+    console.log('Generate deferred revenue report for date:', selectedDate);
+    // Handle generate logic here
+    fetchDeferredRevenue();
   };
 
   const handleView = (id: number) => {
@@ -215,34 +227,67 @@ export default function DeferredRevenue() {
     <div>
       <PageMeta
         title={pageMetaTitle}
-        description="Accounts Receivable - Deferred Revenue Management"
+        description="Accounts Receivable - Deferred Revenue as on"
       />
       <PageBreadcrumb pageTitle="Accounts Receivable - Deferred Revenue" />
       
+      
+      
       <div className="space-y-6">
-        {/* Header Section */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Deferred Revenue Management
-            </h1>
-            <p className="mt-1 text-gray-600 dark:text-gray-400">
-              View and manage deferred revenue entries
-            </p>
-          </div>
-          
-          <Button
-            onClick={handlePostToTally}
-            size="md"
-            variant="primary"
-            className="flex items-center gap-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            POST TO TALLY
-          </Button>
-        </div>
+                 {/* Header Section */}
+         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+           <div className="flex-1">
+             <div className="flex items-center gap-6">
+               <div>
+                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                   Deferred Revenue as on
+                 </h1>
+                 {/* <p className="mt-1 text-gray-600 dark:text-gray-400">
+                   View and manage deferred revenue entries
+                 </p> */}
+               </div>
+               
+               {/* Date Picker and Generate Button */}
+               <div className="flex items-center gap-4">
+                 <div>
+                   <DatePicker
+                     id="deferredRevenueDate"
+                     label=""
+                     placeholder="Select date"
+                     onChange={(dates, currentDateString) => {
+                       setSelectedDate(currentDateString);
+                     }}
+                   />
+                 </div>
+                 <div className="flex items-end">
+                   <Button
+                     onClick={handleGenerate}
+                     size="md"
+                     variant="primary"
+                     className="flex items-center gap-2"
+                   >
+                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                     </svg>
+                     Generate
+                   </Button>
+                 </div>
+               </div>
+             </div>
+           </div>
+           
+           <Button
+             onClick={handlePostToTally}
+             size="md"
+             variant="primary"
+             className="flex items-center gap-2"
+           >
+             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+             </svg>
+             POST TO TALLY
+           </Button>
+         </div>
 
         
 
@@ -266,12 +311,7 @@ export default function DeferredRevenue() {
                        <span className="ml-2">Selected</span>
                      </div>
                    </TableCell>
-                   <TableCell
-                     isHeader
-                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                   >
-                     Date
-                   </TableCell>
+                   
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
@@ -308,14 +348,20 @@ export default function DeferredRevenue() {
                   >
                     Debit Amount
                   </TableCell>
-                  <TableCell
-                    isHeader
-                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                  >
-                    Credit Amount
-                  </TableCell>
-                  
-                </TableRow>
+                                     <TableCell
+                     isHeader
+                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                   >
+                     Credit Amount
+                   </TableCell>
+                   <TableCell
+                     isHeader
+                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                   >
+                     Actions
+                   </TableCell>
+                   
+                 </TableRow>
               </TableHeader>
 
               <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
@@ -336,23 +382,19 @@ export default function DeferredRevenue() {
                      <TableCell className="px-5 py-8">{null}</TableCell>
                      <TableCell className="px-5 py-8">{null}</TableCell>
                      <TableCell className="px-5 py-8">{null}</TableCell>
+                     <TableCell className="px-5 py-8">{null}</TableCell>
                    </TableRow>
-                ) : data.length > 0 ? (
-                  data.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="px-5 py-4 text-start">
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.has(item.id)}
-                          onChange={() => handleSelectItem(item.id)}
-                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-                        />
-                      </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className="text-gray-600 text-theme-sm dark:text-gray-400">
-                          {item.date}
-                        </span>
-                      </TableCell>
+                                 ) : data.length > 0 ? (
+                   data.map((item) => (
+                     <TableRow key={item.id}>
+                       <TableCell className="px-5 py-4 text-start">
+                         <input
+                           type="checkbox"
+                           checked={selectedItems.has(item.id)}
+                           onChange={() => handleSelectItem(item.id)}
+                           className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+                         />
+                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
                         <span className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
                           {item.accountNo}
@@ -392,17 +434,29 @@ export default function DeferredRevenue() {
                           ₹{item.debitAmount}
                         </span>
                       </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className={`font-semibold text-theme-sm ${
-                          item.creditAmount !== '0' 
-                            ? 'text-green-600 dark:text-green-400' 
-                            : 'text-gray-400'
-                        }`}>
-                          ₹{item.creditAmount}
-                        </span>
-                      </TableCell>
-                      
-                    </TableRow>
+                                             <TableCell className="px-5 py-4 text-start">
+                         <span className={`font-semibold text-theme-sm ${
+                           item.creditAmount !== '0' 
+                             ? 'text-green-600 dark:text-green-400' 
+                             : 'text-gray-400'
+                         }`}>
+                           ₹{item.creditAmount}
+                         </span>
+                       </TableCell>
+                       <TableCell className="px-5 py-4 text-start">
+                         <div className="flex items-center gap-2">
+                           <Button
+                             onClick={() => handleView(item.id)}
+                             size="sm"
+                             variant="outline"
+                             className="h-8 px-3 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                           >
+                             View
+                           </Button>
+                         </div>
+                       </TableCell>
+                       
+                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
@@ -416,6 +470,7 @@ export default function DeferredRevenue() {
                         <p className="text-sm">Try adjusting your search or filter criteria</p>
                       </div>
                     </TableCell>
+                    <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>
                     <TableCell className="px-5 py-8">{null}</TableCell>

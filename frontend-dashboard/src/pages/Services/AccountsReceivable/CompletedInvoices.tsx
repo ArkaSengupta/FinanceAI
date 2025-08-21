@@ -136,7 +136,7 @@ export default function CompletedInvoices() {
   };
 
   const handleDuplicate = (id: number) => {
-    console.log('Duplicate completed invoice with id:', id);
+    console.log('Copy completed invoice with id:', id);
   };
 
   // Pagination handlers
@@ -452,7 +452,7 @@ export default function CompletedInvoices() {
                             variant="outline"
                             className="h-8 px-3 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
                           >
-                            Duplicate
+                            Copy
                           </Button>
                         </div>
                       </TableCell>

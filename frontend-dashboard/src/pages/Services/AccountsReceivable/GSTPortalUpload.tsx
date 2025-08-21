@@ -24,7 +24,7 @@ interface GSTInvoiceItem {
   gstRate: string;
   igst: string;
   cgst: string;
-  cess: string;
+  sgst: string;
   invoiceValue: string;
 }
 
@@ -54,8 +54,24 @@ const generateDummyData = (count: number): GSTInvoiceItem[] => {
     const taxableValue = Math.floor(Math.random() * 100000) + 1000;
     const gstRate = Math.random() > 0.5 ? 18 : 12;
     const gstAmount = (taxableValue * gstRate) / 100;
-    const igst = Math.random() > 0.5 ? gstAmount : 0;
-    const cgst = igst === 0 ? gstAmount / 2 : 0;
+    
+    // Determine if it's inter-state (IGST) or intra-state (CGST+SGST)
+    const isInterState = Math.random() > 0.5;
+    
+    let igst, cgst, sgst;
+    if (isInterState) {
+      // Inter-state: Full GST as IGST
+      igst = gstAmount;
+      cgst = 0;
+      sgst = 0;
+    } else {
+      // Intra-state: Split GST as CGST and SGST (50% each)
+      igst = 0;
+      const halfGstAmount = gstAmount / 2;
+      cgst = halfGstAmount;
+      sgst = halfGstAmount; // Ensure SGST is exactly equal to CGST
+    }
+    
     const cess = Math.random() > 0.8 ? Math.floor(Math.random() * 1000) : 0;
     const invoiceValue = taxableValue + gstAmount + cess;
     
@@ -70,7 +86,7 @@ const generateDummyData = (count: number): GSTInvoiceItem[] => {
       gstRate: `${gstRate}%`,
       igst: igst.toLocaleString(),
       cgst: cgst.toLocaleString(),
-      cess: cess.toLocaleString(),
+      sgst: sgst.toLocaleString(),
       invoiceValue: invoiceValue.toLocaleString()
     };
   });
@@ -199,10 +215,10 @@ export default function GSTPortalUpload() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              GST Portal Upload Management
+              GST Portal Upload
             </h1>
             <p className="mt-1 text-gray-600 dark:text-gray-400">
-              View and manage GST invoices for portal upload
+              View GST invoices for portal upload
             </p>
           </div>
           
@@ -284,7 +300,7 @@ export default function GSTPortalUpload() {
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                   >
-                    CESS
+                    SGST
                   </TableCell>
                   <TableCell
                     isHeader
@@ -375,11 +391,11 @@ export default function GSTPortalUpload() {
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
                         <span className={`font-semibold text-theme-sm ${
-                          item.cess !== '0' 
+                          item.sgst !== '0' 
                             ? 'text-purple-600 dark:text-purple-400' 
                             : 'text-gray-400'
                         }`}>
-                          ₹{item.cess}
+                          ₹{item.sgst}
                         </span>
                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">

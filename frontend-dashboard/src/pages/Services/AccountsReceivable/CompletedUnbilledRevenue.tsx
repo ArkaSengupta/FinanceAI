@@ -18,7 +18,8 @@ interface UnbilledRevenueItem {
   id: number;
   customerName: string;
   serviceDescription: string;
-  billingPeriod: string;
+  serviceFrom: string;
+  serviceTo: string;
   amount: string;
   currency: string;
   status: string;
@@ -57,16 +58,24 @@ const generateDummyData = (count: number): UnbilledRevenueItem[] => {
   
   const currencies = ["USD", "EUR", "GBP", "INR", "CAD", "AUD"];
 
-  return Array.from({ length: count }, (_, index) => ({
-    id: index + 1,
-    customerName: customers[index % customers.length],
-    serviceDescription: serviceDescriptions[index % serviceDescriptions.length],
-    billingPeriod: `${new Date(2024, Math.floor(Math.random() * 12), 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`,
-    amount: (Math.floor(Math.random() * 10000) + 100).toString(),
-    currency: currencies[index % currencies.length],
-    status: "completed",
-    billingDate: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0]
-  }));
+  return Array.from({ length: count }, (_, index) => {
+    const startMonth = Math.floor(Math.random() * 12);
+    const endMonth = Math.min(11, startMonth + Math.floor(Math.random() * 3) + 1);
+    const startDate = new Date(2024, startMonth, 1);
+    const endDate = new Date(2024, endMonth, Math.floor(Math.random() * 28) + 1);
+    
+    return {
+      id: index + 1,
+      customerName: customers[index % customers.length],
+      serviceDescription: serviceDescriptions[index % serviceDescriptions.length],
+      serviceFrom: startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      serviceTo: endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      amount: (Math.floor(Math.random() * 10000) + 100).toString(),
+      currency: currencies[index % currencies.length],
+      status: "completed",
+      billingDate: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0]
+    };
+  });
 };
 
 export default function CompletedUnbilledRevenue() {
@@ -148,9 +157,7 @@ export default function CompletedUnbilledRevenue() {
     console.log('View completed unbilled revenue with id:', id);
   };
 
-  const handleDuplicate = (id: number) => {
-    console.log('Duplicate completed unbilled revenue with id:', id);
-  };
+
 
   // Pagination handlers
   const handlePageChange = (page: number) => {
@@ -361,12 +368,18 @@ export default function CompletedUnbilledRevenue() {
                   >
                     Service Description
                   </TableCell>
-                  <TableCell
-                    isHeader
-                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                  >
-                    Billing Period
-                  </TableCell>
+                                     <TableCell
+                     isHeader
+                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                   >
+                     Service From
+                   </TableCell>
+                   <TableCell
+                     isHeader
+                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                   >
+                     Service To
+                   </TableCell>
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
@@ -379,12 +392,7 @@ export default function CompletedUnbilledRevenue() {
                   >
                     Currency
                   </TableCell>
-                  <TableCell
-                    isHeader
-                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                  >
-                    Billing Date
-                  </TableCell>
+
                   <TableCell
                     isHeader
                     className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
@@ -431,11 +439,16 @@ export default function CompletedUnbilledRevenue() {
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className="text-gray-600 text-theme-sm dark:text-gray-400">
-                          {item.billingPeriod}
-                        </span>
-                      </TableCell>
+                                             <TableCell className="px-5 py-4 text-start">
+                         <span className="text-gray-600 text-theme-sm dark:text-gray-400">
+                           {item.serviceFrom}
+                         </span>
+                       </TableCell>
+                       <TableCell className="px-5 py-4 text-start">
+                         <span className="text-gray-600 text-theme-sm dark:text-gray-400">
+                           {item.serviceTo}
+                         </span>
+                       </TableCell>
                       <TableCell className="px-5 py-4 text-start">
                         <span className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
                           {item.amount}
@@ -446,11 +459,7 @@ export default function CompletedUnbilledRevenue() {
                           {item.currency}
                         </span>
                       </TableCell>
-                      <TableCell className="px-5 py-4 text-start">
-                        <span className="text-gray-600 text-theme-sm dark:text-gray-400">
-                          {item.billingDate}
-                        </span>
-                      </TableCell>
+
                       <TableCell className="px-5 py-4 text-start">
                         <div className="flex items-center gap-2">
                           <Button
@@ -460,14 +469,6 @@ export default function CompletedUnbilledRevenue() {
                             className="h-8 px-3 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                           >
                             View
-                          </Button>
-                          <Button
-                            onClick={() => handleDuplicate(item.id)}
-                            size="sm"
-                            variant="outline"
-                            className="h-8 px-3 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
-                          >
-                            Duplicate
                           </Button>
                         </div>
                       </TableCell>

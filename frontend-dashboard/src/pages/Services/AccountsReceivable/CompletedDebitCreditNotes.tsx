@@ -150,9 +150,7 @@ export default function CompletedDebitCreditNotes() {
     console.log('View completed debit/credit note with id:', id);
   };
 
-  const handleDuplicate = (id: number) => {
-    console.log('Duplicate completed debit/credit note with id:', id);
-  };
+
 
   // Pagination handlers
   const handlePageChange = (page: number) => {
@@ -504,14 +502,6 @@ export default function CompletedDebitCreditNotes() {
                             className="h-8 px-3 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                           >
                             View
-                          </Button>
-                          <Button
-                            onClick={() => handleDuplicate(item.id)}
-                            size="sm"
-                            variant="outline"
-                            className="h-8 px-3 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
-                          >
-                            Duplicate
                           </Button>
                         </div>
                       </TableCell>
